@@ -70,7 +70,8 @@ const AddUpdateEvent = () => {
     try {
       if (id) {
         // Update existing event
-        const response = await axios.put(`${window.react_app_url + window.event_url}/${id}`, formDataToSend, {
+        const response = await axios.put(`${window.react_app_url + window.event_url}/${id}`, formDataToSend, 
+        {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -128,7 +129,6 @@ const AddUpdateEvent = () => {
       }
       navigate('/admin/events');
     } catch (error) {
-      console.error('Error:', error);
       toast.error(error, {
         position: 'top-right',
         autoClose: 5000,
