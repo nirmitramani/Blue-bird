@@ -15,7 +15,7 @@ const AddUpdateUser = () => {
         phone: '',
         profileimg: null,
     });
-    
+
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
@@ -43,10 +43,18 @@ const AddUpdateUser = () => {
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
         if (name === 'profileimg') {
-            setFormData({
-                ...formData,
-                [name]: files[0],
-            });
+            const file = files[0];
+            if (file) {
+                if (file.type === 'image/jpeg' || file.type === 'image/png') {
+                    setFormData({
+                        ...formData,
+                        [name]: file,
+                    });
+                } else {
+                    e.target.value = null;
+                    toast.error('Please select a jpg or png image.');
+                }
+            }
         } else {
             setFormData({
                 ...formData,

@@ -7,6 +7,7 @@ import BreadCrumb from '../../hooks/BreadCrumb';
 import { toast } from 'react-toastify';
 import { FaSearch } from "react-icons/fa";
 import useAnimatedLoader from '../../hooks/useAnimatedLoader';
+import { usePagination, Pagination } from '../../hooks/Pagination';
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -37,6 +38,7 @@ const Orders = () => {
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
+    handlePageChange(1)
   };
 
   const updateStatus = (id, newStatus) => {
@@ -79,6 +81,9 @@ const Orders = () => {
     });
   }, [orders, searchQuery]);
 
+  const { currentPage, totalPages, handlePageChange, currentItems } = usePagination(filteredOrders);
+
+
   return (
     <>
       <div className="p-6 flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between">
@@ -106,146 +111,153 @@ const Orders = () => {
           <Loader key="" />
         ) : (
           <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
-            {filteredOrders.length > 0 ? (
-
-              <div className="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
-                <table className="min-w-full leading-normal">
-                  <thead>
-                    <tr>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                        User Id
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                        Coupon Id
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                        Discount Amount
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                        Order Date
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                        Payment Type
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                        ACTIONS
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredOrders.map((order) => (
-                      <tr key={order._id}>
-
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <div className="flex">
-                            <div className="ml-3">
-                              <p className="text-gray-600 whitespace-no-wrap">{order.userId}</p>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <div className="flex">
-                            <div className="ml-3">
-                              <p className="text-gray-600 whitespace-no-wrap">{order.couponId}</p>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <div className="flex">
-                            <div className="ml-3">
-                              <p className="text-gray-600 whitespace-no-wrap">{order.discountAmount}</p>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <div className="flex">
-                            <div className="ml-3">
-                              <p className="text-gray-600 whitespace-no-wrap">
-                                {new Date(order.orderDate).toLocaleDateString('en-GB', {
-                                  day: '2-digit',
-                                  month: '2-digit',
-                                  year: 'numeric',
-                                })}
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <div className="flex">
-                            <div className="ml-3">
-                              <p className="text-gray-600 whitespace-no-wrap">{order.paymentType}</p>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td className='bg-white border-b'>
-                          <div className="flex">
-                            <div className="ml-3">
-                              <label>
-                                <input
-                                  type="radio"
-                                  value="Pending"
-                                  checked={selectedStatus[order._id] === 'Pending'}
-                                  onChange={() => updateStatus(order._id, 'Pending')}
-                                />
-                                Pending
-                              </label>
-                            </div>
-                            <div className="ml-3">
-                              <label>
-                                <input
-                                  type="radio"
-                                  value="Deliverd"
-                                  checked={selectedStatus[order._id] === 'Deliverd'}
-                                  onChange={() => updateStatus(order._id, 'Deliverd')}
-                                />
-                                Deliverd
-                              </label>
-                            </div>
-                            <div className="ml-3">
-                              <label>
-                                <input
-                                  type="radio"
-                                  value="Cancelled"
-                                  checked={selectedStatus[order._id] === 'Cancelled'}
-                                  onChange={() => updateStatus(order._id, 'Cancelled')}
-                                />
-                                Cancelled
-                              </label>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm space-x-2">
-                          <span className="relative inline-block px-3 py-1 font-semibold text-yellow-900 leading-tight">
-                            <span aria-hidden className="absolute inset-0 bg-yellow-200 opacity-50 rounded-full"></span>
-                            <span className="relative">
-                              <Link to={`view/${order._id}`}>
-                                <button>View</button>
-                              </Link>
-                            </span>
-                          </span>
-                          <span className="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
-                            <span aria-hidden className="absolute inset-0 bg-red-200 opacity-50 rounded-full"></span>
-                            <span className="relative">
-                              <button onClick={() => handleDelete(order._id)}>
-                                Delete
-                              </button>
-                            </span>
-                          </span>
-                        </td>
+            {currentItems.length > 0 ? (
+              <>
+                <div className="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
+                  <table className="min-w-full leading-normal">
+                    <thead>
+                      <tr>
+                        <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                          User Id
+                        </th>
+                        <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                          Coupon Id
+                        </th>
+                        <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                          Discount Amount
+                        </th>
+                        <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                          Order Date
+                        </th>
+                        <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                          Payment Type
+                        </th>
+                        <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                          ACTIONS
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {currentItems.map((order) => (
+
+                        <tr key={order._id}>
+
+                          <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            <div className="flex">
+                              <div className="ml-3">
+                                <p className="text-gray-600 whitespace-no-wrap">{order.userId}</p>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            <div className="flex">
+                              <div className="ml-3">
+                                <p className="text-gray-600 whitespace-no-wrap">{order.couponId}</p>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            <div className="flex">
+                              <div className="ml-3">
+                                <p className="text-gray-600 whitespace-no-wrap">{order.discountAmount}</p>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            <div className="flex">
+                              <div className="ml-3">
+                                <p className="text-gray-600 whitespace-no-wrap">
+                                  {new Date(order.orderDate).toLocaleDateString('en-GB', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                  })}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            <div className="flex">
+                              <div className="ml-3">
+                                <p className="text-gray-600 whitespace-no-wrap">{order.paymentType}</p>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className='bg-white border-b'>
+                            <div className="flex">
+                              <div className="ml-3">
+                                <label>
+                                  <input
+                                    type="radio"
+                                    value="Pending"
+                                    checked={selectedStatus[order._id] === 'Pending'}
+                                    onChange={() => updateStatus(order._id, 'Pending')}
+                                  />
+                                  Pending
+                                </label>
+                              </div>
+                              <div className="ml-3">
+                                <label>
+                                  <input
+                                    type="radio"
+                                    value="Deliverd"
+                                    checked={selectedStatus[order._id] === 'Deliverd'}
+                                    onChange={() => updateStatus(order._id, 'Deliverd')}
+                                  />
+                                  Deliverd
+                                </label>
+                              </div>
+                              <div className="ml-3">
+                                <label>
+                                  <input
+                                    type="radio"
+                                    value="Cancelled"
+                                    checked={selectedStatus[order._id] === 'Cancelled'}
+                                    onChange={() => updateStatus(order._id, 'Cancelled')}
+                                  />
+                                  Cancelled
+                                </label>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm space-x-2">
+                            <span className="relative inline-block px-3 py-1 font-semibold text-yellow-900 leading-tight">
+                              <span aria-hidden className="absolute inset-0 bg-yellow-200 opacity-50 rounded-full"></span>
+                              <span className="relative">
+                                <Link to={`view/${order._id}`}>
+                                  <button>View</button>
+                                </Link>
+                              </span>
+                            </span>
+                            <span className="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
+                              <span aria-hidden className="absolute inset-0 bg-red-200 opacity-50 rounded-full"></span>
+                              <span className="relative">
+                                <button onClick={() => handleDelete(order._id)}>
+                                  Delete
+                                </button>
+                              </span>
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  handlePageChange={handlePageChange}
+                />
+              </>
             ) : (
               <p className="text-center text-gray-500">No data found</p>
             )}

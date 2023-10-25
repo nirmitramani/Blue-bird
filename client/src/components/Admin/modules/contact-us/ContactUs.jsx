@@ -5,13 +5,13 @@ import { toast } from 'react-toastify';
 import BreadCrumb from '../../hooks/BreadCrumb';
 import { FaSearch } from "react-icons/fa";
 import useAnimatedLoader from '../../hooks/useAnimatedLoader';
+import { Pagination, usePagination } from '../../hooks/Pagination';
 
 const ContactUs = () => {
   const [contactUs, setContactUs] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const { loading, startAnimatedLoading, stopAnimatedLoading, Loader } = useAnimatedLoader();
   const [selectedStatus, setSelectedStatus] = useState({});
-
 
   useEffect(() => {
     startAnimatedLoading()
@@ -42,6 +42,7 @@ const ContactUs = () => {
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
+    handlePageChange(1)
   };
 
   const updateStatus = (id, newStatus) => {
@@ -76,6 +77,8 @@ const ContactUs = () => {
     });
   }, [contactUs, searchQuery]);
 
+  const { currentPage, totalPages, handlePageChange, currentItems } = usePagination(filteredContactUs,1);
+
   return (
     <>
 
@@ -104,7 +107,7 @@ const ContactUs = () => {
           <Loader />
         ) : (
           <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
-            {filteredContactUs.length > 0 ? (
+            {currentItems.length > 0 ? (
               <div className="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
                 <table className="min-w-full leading-normal">
                   <thead>
@@ -127,7 +130,7 @@ const ContactUs = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredContactUs.map((contact) => (
+                    {currentItems.map((contact) => (
                       <tr key={contact._id}>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           <div className="flex">
@@ -207,6 +210,11 @@ const ContactUs = () => {
             )}
           </div>
         )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+        />
       </div>
     </>
   );
