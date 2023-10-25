@@ -16,36 +16,6 @@ exports.index = async (req, res) => {
   }
 };
 
-// exports.store = async (req, res) => {
-//   try {
-//     const productimgFilename = req.files.find(file => file.fieldname === 'productimg').filename;
-//     const productthumbimg = [];
-
-//     for (const file of req.files) {
-//       if (file.fieldname.startsWith('productthumbimg_')) {
-//         productthumbimg.push(file.filename);
-//       }
-//     }
-//     const productData = {
-//       productimg: productimgFilename,
-//       productthumbimg: productthumbimg,
-//       name: req.body.name,
-//       description: req.body.description,
-//       stockquantity: req.body.stockquantity,
-//       categoryid: req.body.categoryid,
-//       price: req.body.price,
-//     };
-//     const createdProduct = await User.create(productData);
-//     res.status(201).json({
-//       status: true,
-//       message: constant.MSG_FOR_USER_ADD_SUCCEESFULL,
-//       data: createdProduct,
-//     });
-//   } catch (error) {
-//     res.json({ status: false, message: error.message });
-//   }
-// };
-
 exports.show = async (req, res) => {
   try {
     const getUser = await User.findById(req.params.id);

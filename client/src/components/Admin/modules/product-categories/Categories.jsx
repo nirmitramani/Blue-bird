@@ -9,6 +9,8 @@ import { FaSearch } from "react-icons/fa";
 import useDragAndDrop from '../../hooks/useDragAndDrop';
 import useAnimatedLoader from '../../hooks/useAnimatedLoader';
 import ConfirmDelete from '../../hooks/ConfirmDelete';
+import { usePagination, Pagination } from '../../hooks/Pagination';
+
 
 const Categories = () => {
 
@@ -52,6 +54,7 @@ const Categories = () => {
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
+        handlePageChange(1)
     };
 
     const handleStatusChange = (id) => {
@@ -115,6 +118,8 @@ const Categories = () => {
         });
     }, [categories, searchQuery]);
 
+    const { currentPage, totalPages, handlePageChange, currentItems } = usePagination(filteredCategories);
+
     return (
         <>
             <div className="p-6 flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between">
@@ -149,100 +154,107 @@ const Categories = () => {
                     <Loader />
                 ) : (
                     <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
-                        {filteredCategories.length > 0 ? (
-                            <div className="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
-                                <table className="min-w-full leading-normal">
-                                    <thead>
-                                        <tr>
-                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                                Name
-                                            </th>
-                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                                Gender
-                                            </th>
-                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                                Image
-                                            </th>
-                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                                Status
-                                            </th>
-                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                                ACTIONS
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {filteredCategories.map((category, index) => (
-                                            <tr
-                                                key={category._id}
-                                                draggable
-                                                onDragStart={() => handleDragStart(category)}
-                                                onDragOver={(e) => e.preventDefault()}
-                                                onDrop={() => handleDragEnd(index, filteredCategories, setCategories)}
-                                            >
-                                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                    <div className="flex">
-                                                        <div className="ml-3">
-                                                            <p className="text-gray-900 whitespace-no-wrap">{category.name}</p>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                    <div className="flex">
-                                                        <div className="ml-3">
-                                                            <p className="text-gray-900 whitespace-no-wrap">{category.gender}</p>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-
-                                                    <img
-                                                        className="h-full rounded-sm w-20"
-                                                        src={`http://localhost:3000/public/images/product-categories/${category.productcategoryimg}`}
-                                                        alt={category.name}
-                                                        loading='eager'
-                                                    />
-
-                                                </td>
-                                                <td className='bg-white border-b'>
-                                                    <label className="relative inline-flex items-center cursor-pointer">
-                                                        <input type="checkbox" className="sr-only peer"
-                                                            id={`flexSwitchCheckChecked_${category._id}`}
-                                                            checked={switchStates[category._id] || false}
-                                                            onChange={() => handleStatusChange(category._id)}
-                                                        />
-                                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                                    </label>
-                                                </td>
-                                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm space-x-2">
-                                                    <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                                                        <span aria-hidden className="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                        <span className="relative">
-                                                            <Link to={`update/${category._id}`}>
-                                                                <button>Edit</button>
-                                                            </Link>
-                                                        </span>
-                                                    </span>
-                                                    <span className="relative inline-block px-3 py-1 font-semibold text-yellow-900 leading-tight">
-                                                        <span aria-hidden className="absolute inset-0 bg-yellow-200 opacity-50 rounded-full"></span>
-                                                        <span className="relative">
-                                                            <Link to={`view/${category._id}`}>
-                                                                <button>View</button>
-                                                            </Link>
-                                                        </span>
-                                                    </span>
-                                                    <span className="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
-                                                        <span aria-hidden className="absolute inset-0 bg-red-200 opacity-50 rounded-full"></span>
-                                                        <span className="relative">
-                                                            <button onClick={() => handleDelete(category._id)}>Delete</button>
-                                                        </span>
-                                                    </span>
-                                                </td>
+                        {currentItems.length > 0 ? (
+                            <>
+                                <div className="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
+                                    <table className="min-w-full leading-normal">
+                                        <thead>
+                                            <tr>
+                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                                    Name
+                                                </th>
+                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                                    Gender
+                                                </th>
+                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                                    Image
+                                                </th>
+                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                                    Status
+                                                </th>
+                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                                    ACTIONS
+                                                </th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </thead>
+                                        <tbody>
+                                            {currentItems.map((category, index) => (
+                                                <tr
+                                                    key={category._id}
+                                                    draggable
+                                                    onDragStart={() => handleDragStart(category)}
+                                                    onDragOver={(e) => e.preventDefault()}
+                                                    onDrop={() => handleDragEnd(index, currentItems, setCategories)}
+                                                >
+                                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                        <div className="flex">
+                                                            <div className="ml-3">
+                                                                <p className="text-gray-900 whitespace-no-wrap">{category.name}</p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                        <div className="flex">
+                                                            <div className="ml-3">
+                                                                <p className="text-gray-900 whitespace-no-wrap">{category.gender}</p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+
+                                                        <img
+                                                            className="h-full rounded-sm w-20"
+                                                            src={`http://localhost:3000/public/images/product-categories/${category.productcategoryimg}`}
+                                                            alt={category.name}
+                                                            loading='eager'
+                                                        />
+
+                                                    </td>
+                                                    <td className='bg-white border-b'>
+                                                        <label className="relative inline-flex items-center cursor-pointer">
+                                                            <input type="checkbox" className="sr-only peer"
+                                                                id={`flexSwitchCheckChecked_${category._id}`}
+                                                                checked={switchStates[category._id] || false}
+                                                                onChange={() => handleStatusChange(category._id)}
+                                                            />
+                                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                                        </label>
+                                                    </td>
+                                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm space-x-2">
+                                                        <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                            <span aria-hidden className="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                            <span className="relative">
+                                                                <Link to={`update/${category._id}`}>
+                                                                    <button>Edit</button>
+                                                                </Link>
+                                                            </span>
+                                                        </span>
+                                                        <span className="relative inline-block px-3 py-1 font-semibold text-yellow-900 leading-tight">
+                                                            <span aria-hidden className="absolute inset-0 bg-yellow-200 opacity-50 rounded-full"></span>
+                                                            <span className="relative">
+                                                                <Link to={`view/${category._id}`}>
+                                                                    <button>View</button>
+                                                                </Link>
+                                                            </span>
+                                                        </span>
+                                                        <span className="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
+                                                            <span aria-hidden className="absolute inset-0 bg-red-200 opacity-50 rounded-full"></span>
+                                                            <span className="relative">
+                                                                <button onClick={() => handleDelete(category._id)}>Delete</button>
+                                                            </span>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <Pagination
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    handlePageChange={handlePageChange}
+                                />
+                            </>
                         ) : (
                             <p className="text-center text-gray-500">No data found</p>
                         )}

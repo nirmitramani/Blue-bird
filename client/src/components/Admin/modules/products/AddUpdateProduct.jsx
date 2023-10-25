@@ -55,15 +55,31 @@ const AddUpdateProduct = () => {
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
         if (name === 'productimg') {
-            setFormData({
-                ...formData,
-                [name]: files[0],
-            });
+            const file = files[0];
+            if (file) {
+                if (file.type === 'image/jpeg' || file.type === 'image/png') {
+                    setFormData({
+                        ...formData,
+                        [name]: file,
+                    });
+                } else {
+                    e.target.value = null;
+                    toast.error('Please select a jpg or png image.');
+                }
+            }
         } else if (name === 'productthumbimg') {
-            setFormData({
-                ...formData,
-                productthumbimg: Array.from(files),
-            });
+            const file = files[0];
+            if (file) {
+                if (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg' || file.type === 'image/webp') {
+                    setFormData({
+                        ...formData,
+                        productthumbimg: Array.from(files),
+                    });
+                } else {
+                    e.target.value = null;
+                    toast.error('Please select a jpg / png / jpeg / webp image.');
+                }
+            }
         } else {
             setFormData({
                 ...formData,
@@ -200,7 +216,6 @@ const AddUpdateProduct = () => {
                             onChange={handleInputChange}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             placeholder="Enter Name"
-                            required
                         />
                         <label htmlFor="description" className="mt-4 block text-sm font-medium text-gray-900 ">
                             Description
@@ -213,7 +228,6 @@ const AddUpdateProduct = () => {
                             onChange={handleInputChange}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             placeholder="Enter Description"
-                            required
                         />
                         <label htmlFor="price" className="mt-4 block text-sm font-medium text-gray-900 ">
                             Price
@@ -226,7 +240,6 @@ const AddUpdateProduct = () => {
                             onChange={handleInputChange}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             placeholder="Enter Price"
-                            required
                         />
                         <label htmlFor="stockquantity" className="mt-4 block text-sm font-medium text-gray-900 ">
                             Stock Quantity
@@ -239,7 +252,6 @@ const AddUpdateProduct = () => {
                             onChange={handleInputChange}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             placeholder="Enter Stock Quantity"
-                            required
                         />
                         <label htmlFor="category" className="mt-4 block text-sm font-medium text-gray-900">
                             Product Category
@@ -250,7 +262,6 @@ const AddUpdateProduct = () => {
                             value={formData.categoryid}
                             onChange={handleInputChange}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                            required
                         >
                             <option value="">Select Product Category</option>
                             {productCategories.length > 0 ? (
