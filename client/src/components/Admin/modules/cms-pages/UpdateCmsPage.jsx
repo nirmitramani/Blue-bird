@@ -16,21 +16,27 @@ const UpdateCmsPage = () => {
     description: '',
   });
 
+  const [dataFetched, setDataFetched] = useState(false);
+
   useEffect(() => {
-    if (id) {
+    if (id && !dataFetched) {
       startLoading();
-      axios.get(`${window.react_app_url + window.cms_page_url}/${id}`)
+      axios
+        .get(`${window.react_app_url + window.cms_page_url}/${id}`)
         .then((response) => {
           const { title, description } = response.data.data;
           setFormData({ title, description });
           stopLoading();
+          setDataFetched(true);
+
         })
-        .catch(error => {
+        .catch((error) => {
           console.error('Error fetching data:', error);
           stopLoading();
+          navigate('/admin/cms-pages');
         });
     }
-  }, [id]);
+  }, [id, dataFetched, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -62,18 +68,26 @@ const UpdateCmsPage = () => {
         title: formData.title,
         description: formData.description,
       };
+      
+      if (id) {
+        if (!dataFetched) {
+          navigate('/admin/cms-pages');
+        }
+        if (dataFetched) {
+          const response = await axios.put(`${window.react_app_url + window.cms_page_url}/${id}`, formDataToSend);
 
-      const response = await axios.put(`${window.react_app_url + window.cms_page_url}/${id}`, formDataToSend);
-      toast.success(response.data.message, {
-        position: 'top-right',
-        autoClose: 5000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'dark',
-      });
+          toast.success(response.data.message, {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'dark',
+          });
+        }
+      }
       navigate('/admin/cms-pages');
     } catch (error) {
       console.error('Error:', error);

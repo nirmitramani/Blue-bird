@@ -4,10 +4,12 @@ import axios from 'axios';
 import Button from '../../hooks/Button';
 import BreadCrumb from '../../hooks/BreadCrumb';
 import { toast } from 'react-toastify';
+import useLoader from '../../hooks/useLoader';
 
 const AddUpdateCouponCode = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { loading, startLoading, stopLoading, Loader } = useLoader();
   const currentDate = new Date().toISOString().split('T')[0];
 
   const initialFormData = {
@@ -22,16 +24,25 @@ const AddUpdateCouponCode = () => {
   };
 
   const [formData, setFormData] = useState(initialFormData);
+  const [dataFetched, setDataFetched] = useState(false);
 
   useEffect(() => {
-    if (id) {
-      axios.get(`${window.react_app_url + window.coupon_code_url}/${id}`)
+    if (id && !dataFetched) {
+      startLoading();
+      axios
+        .get(`${window.react_app_url + window.coupon_code_url}/${id}`)
         .then((response) => {
           setFormData(response.data.data);
+          stopLoading();
+          setDataFetched(true);
         })
-        .catch((err) => console.log(err));
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+          stopLoading();
+          navigate('/admin/coupon-code');
+        });
     }
-  }, [id]);
+  }, [id, dataFetched, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -52,6 +63,7 @@ const AddUpdateCouponCode = () => {
     e.preventDefault();
 
     try {
+
       if (!formData.title || !formData.code || !formData.description || !formData.discount || !formData.maxDiscount || !formData.startDate || !formData.endDate || !formData.minimumOrderValue) {
         toast.warning('Please fill in all required fields.', {
           position: 'top-right',
@@ -67,18 +79,27 @@ const AddUpdateCouponCode = () => {
       }
 
       if (id) {
-        // Update existing Coupon Code
-        const response = await axios.put(`${window.react_app_url + window.coupon_code_url}/${id}`, formData);
-        toast.success(response.data.message, {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'dark',
-        });
+        if (!dataFetched) {
+          navigate('/admin/coupon-code'); 
+          return;
+        }
+
+        if (dataFetched) {
+          const response = await axios.put(
+            `${window.react_app_url + window.coupon_code_url}/${id}`,
+            formData
+          );
+          toast.success(response.data.message, {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'dark',
+          });
+        }
       } else {
         // Create new Coupon Code
         const response = await axios.post(`${window.react_app_url + window.coupon_code_url}`, formData);

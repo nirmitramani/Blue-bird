@@ -10,29 +10,33 @@ const AddUpdateFAQs = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { loading, startLoading, stopLoading, Loader } = useLoader();
-  
+
   const initialFormData = {
     question: '',
     answer: '',
   };
-  
+
   const [formData, setFormData] = useState(initialFormData);
+  const [dataFetched, setDataFetched] = useState(false);
 
   useEffect(() => {
-    if (id) {
+    if (id && !dataFetched) {
       startLoading();
-      axios.get(`${window.react_app_url + window.faq_url}/${id}`)
+      axios
+        .get(`${window.react_app_url + window.faq_url}/${id}`)
         .then((response) => {
           const { question, answer } = response.data.data;
           setFormData({ question, answer });
           stopLoading();
+          setDataFetched(true);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error('Error fetching data:', error);
           stopLoading();
+          navigate('/admin/faqs');
         });
     }
-  }, [id]);
+  }, [id, dataFetched, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -66,20 +70,26 @@ const AddUpdateFAQs = () => {
       };
 
       if (id) {
-        // Update existing FAQ
-        const response = await axios.put(`${window.react_app_url + window.faq_url}/${id}`, formDataToSend);
-        toast.success(response.data.message, {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'dark',
-        });
+        if (!dataFetched) {
+          navigate('/admin/faqs');
+        }
+        if (dataFetched) {
+          const responseUpdate = await axios.put(
+            `${window.react_app_url + window.faq_url}/${id}`,
+            formDataToSend
+          );
+          toast.success(responseUpdate.data.message, {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'dark',
+          });
+        }
       } else {
-        // Create new FAQ
         const response = await axios.post(`${window.react_app_url + window.faq_url}`, formDataToSend);
         toast.success(response.data.message, {
           position: 'top-right',
@@ -92,7 +102,6 @@ const AddUpdateFAQs = () => {
           theme: 'dark',
         });
       }
-
       navigate('/admin/faqs');
     } catch (error) {
       console.error('Error:', error);
@@ -111,6 +120,18 @@ const AddUpdateFAQs = () => {
       stopLoading();
     }
   };
+
+  // useEffect(() => {
+  //   if (id && !isValidId(id)) {
+  //     navigate('/admin/faqs');
+  //   }
+  // }, [id, navigate]);
+
+  // // Define a function to check if the ID is valid (e.g., numeric)
+  // const isValidId = (id) => {
+  //   const numericId = parseInt(id);
+  //   return !isNaN(numericId) && isFinite(numericId);
+  // };
 
   return (
     <>
