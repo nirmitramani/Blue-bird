@@ -9,6 +9,7 @@ import { FaSearch } from "react-icons/fa";
 import useDragAndDrop from '../../hooks/useDragAndDrop';
 import useAnimatedLoader from '../../hooks/useAnimatedLoader';
 import ConfirmDelete from '../../hooks/ConfirmDelete';
+import { usePagination, Pagination } from '../../hooks/Pagination';
 
 const Products = () => {
     const [products, setProducts] = useState([]);
@@ -16,9 +17,6 @@ const Products = () => {
     const { loading, startAnimatedLoading, stopAnimatedLoading, Loader } = useAnimatedLoader();
     const [searchQuery, setSearchQuery] = useState('');
     const [switchStates, setSwitchStates] = useState({});
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 1;
-
 
     const handleReorder = async (newOrder) => {
         try {
@@ -133,30 +131,7 @@ const Products = () => {
         });
     }, [products, searchQuery]);
 
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentProducts = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
-
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-    };
-
-
-    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-    const showPagination = totalPages > 1;
-    const pagination = [];
-    for (let i = 1; i <= totalPages; i++) {
-        pagination.push(
-            <button
-                key={i}
-                onClick={() => handlePageChange(i)}
-                className={`${i === currentPage ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'
-                    } border border-gray-300 px-3 py-1 mx-1 rounded-md`}
-            >
-                {i}
-            </button>
-        );
-    }
+    const { currentPage, totalPages, handlePageChange, currentProducts } = usePagination(filteredProducts);
 
     return (
         <>
@@ -358,11 +333,11 @@ const Products = () => {
                     </div>
 
                 )}
-                {showPagination && (
-                    <div className="text-center mt-4">
-                        {pagination}
-                    </div>
-                )}
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    handlePageChange={handlePageChange}
+                />
             </div>
         </>
     );

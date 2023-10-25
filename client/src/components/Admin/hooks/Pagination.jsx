@@ -22,4 +22,27 @@ const usePagination = (items, customItemsPerPage) => {
   };
 };
 
-export default usePagination;
+const Pagination = ({ currentPage, totalPages, handlePageChange }) => {
+  const pagination = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pagination.push(
+      <button
+        key={i}
+        onClick={() => handlePageChange(i)}
+        className={`border border-gray-300 px-3 py-1 mx-1 rounded-md ${
+          i === currentPage ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'
+        }`}
+      >
+        {i}
+      </button>
+    );
+  }
+
+  return (
+    <div className="text-center mt-4">
+      {pagination}
+    </div>
+  );
+};
+
+export { usePagination, Pagination };
