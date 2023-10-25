@@ -1,8 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Button from '../hooks/Button';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 
 const Profile = () => {
+    const { id } = useParams();
+    const navigate = useNavigate();
+
     const [image, setImage] = useState(null);
+    const [userData, setUserData] = useState('');
+
+    const initialFormData = {
+        userName: '',
+        email: '',
+        profileimg: null,
+    };
+
+    const [formData, setFormData] = useState(initialFormData);
 
     const handleImageChange = (e) => {
         const selectedImage = e.target.files[0];
@@ -13,6 +29,89 @@ const Profile = () => {
                 setImage(e.target.result);
             };
             reader.readAsDataURL(selectedImage);
+
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                profileimg: selectedImage,
+            }));
+        }
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevUserData) => ({
+            ...prevUserData,
+            [name]: value,
+        }));
+    };
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`${window.react_app_url + window.user_url}`);
+            const admin = response.data.data.find((user) => user.role === 'admin');
+            setUserData(admin);
+            setFormData({
+                userName: admin.userName,
+                email: admin.email,
+                profileimg: formData.profileimg,
+            });
+            if (admin.profileimg) {
+                setImage(`http://localhost:3000/public/images/user/${admin.profileimg}`);
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const formDataToSend = new FormData();
+        formDataToSend.append('userName', formData.userName);
+        formDataToSend.append('email', formData.email);
+        if (formData.profileimg) {
+            formDataToSend.append('profileimg', formData.profileimg);
+        }
+
+        try {
+            const res = await axios.put(
+                `${window.react_app_url + window.user_url}/${userData._id}`,
+                formDataToSend,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+
+            if (res.data.status) {
+                toast.success(res.data.message, {
+                    position: 'top-right',
+                    autoClose: 5000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: 'dark',
+                });
+                navigate('/admin/dashboard');
+            }
+        } catch (error) {
+            toast.error('Error updating user data', {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
         }
     };
 
@@ -22,32 +121,32 @@ const Profile = () => {
                 <div className="container mx-auto px-4">
                     <div className="relative flex flex-col min-w-0 break-words bg-slate-100 w-full mb-6 shadow-xl rounded-lg -mt-64">
                         <div className="px-6">
-                            <div className="mt-12 flex justify-center items-center">
-                                <label htmlFor="profile-image" className="cursor-pointer">
-                                    {image ? (
-                                        <img
-                                            src={image}
-                                            alt="Profile"
-                                            className="w-32 h-32 rounded-full border-2 border-gray-200 shadow-lg"
+                            <form onSubmit={handleSubmit}>
+                                <div className="mt-12 flex justify-center items-center">
+                                    <label htmlFor="profile-image" className="cursor-pointer">
+                                        {image ? (
+                                            <img
+                                                src={image}
+                                                alt="Profile"
+                                                className="w-32 h-32 rounded-full border-2 border-gray-200 shadow-lg"
+                                            />
+                                        ) : (
+                                            <img
+                                                alt="Profile"
+                                                className="w-32 h-32 rounded-full border-2 border-gray-200 shadow-lg"
+                                            />
+                                        )}
+                                        <input
+                                            type="file"
+                                            id="profile-image"
+                                            name="profile-image"
+                                            accept="image/*"
+                                            style={{ display: 'none' }}
+                                            onChange={handleImageChange}
                                         />
-                                    ) : (
-                                        <img
-                                            src="../logo.png"
-                                            alt="Profile"
-                                            className="w-32 h-32 rounded-full border-2 border-gray-200 shadow-lg"
-                                        />
-                                    )}
-                                    <input
-                                        type="file"
-                                        id="profile-image"
-                                        name="profile-image"
-                                        accept="image/*"
-                                        style={{ display: 'none' }}
-                                        onChange={handleImageChange}
-                                    />
-                                </label>
-                            </div>
-                            <form>
+                                    </label>
+                                </div>
+
                                 <div className="mx-24 space-y-4">
                                     <div>
                                         <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -56,7 +155,9 @@ const Profile = () => {
                                         <input
                                             type="text"
                                             id="name"
-                                            name="name"
+                                            name="userName"
+                                            value={formData.userName}
+                                            onChange={handleInputChange}
                                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                                         />
                                     </div>
@@ -68,6 +169,8 @@ const Profile = () => {
                                             type="text"
                                             id="email"
                                             name="email"
+                                            value={formData.email}
+                                            onChange={handleInputChange}
                                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                                         />
                                     </div>
@@ -80,9 +183,11 @@ const Profile = () => {
                         <div className="mt-10 py-10 border-t border-blueGray-200 text-center">
                             <div className="flex flex-wrap justify-center">
                                 <div className="w-full lg:w-9/12 px-4">
-                                    <p className="mb-4 text-lg leading-relaxed text-blue-700 cursor-pointer hover:underline">
-                                        Want to change Password ?
-                                    </p>
+                                    <Link to={`change-password/${userData._id}`}>
+                                        <p className="mb-4 text-lg leading-relaxed text-blue-700 cursor-pointer hover:underline">
+                                            Want to change Password?
+                                        </p>
+                                    </Link>
                                 </div>
                             </div>
                         </div>

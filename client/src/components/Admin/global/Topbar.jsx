@@ -1,14 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import birdlogo from "../../../assets/Admin/icons/birdlogo.svg";
 import blackbirdlogo from "../../../assets/Admin/icons/blackbirdlogo.svg";
 import { FaSearch } from "react-icons/fa";
 import Dashboard from "../home/Dashboard";
 import { Link } from "react-router-dom";
 import logo from '../../../assets/logo.png'
+import axios from "axios";
 
 const Topbar = ({ open, setOpen }) => {
   const [text, setText] = useState("");
   const [dropDown, setDropDown] = useState(true);
+  const [image, setImage] = useState(null);
+
+  useEffect(() => {
+    axios.get(`${window.react_app_url + window.user_url}`)
+        .then((response) => {
+            const admin = response.data.data.find(user => user.role === 'admin');
+            if (admin.profileimg) {
+                setImage(`http://localhost:3000/public/images/user/${admin.profileimg}`);
+            }
+        })
+        .catch((error) => {
+            console.error('Error fetching user data:', error);
+        });
+}, []);
 
   return (
     <>
@@ -40,7 +55,7 @@ const Topbar = ({ open, setOpen }) => {
             <div className="flex space-x-5 justify-center items-center pl-2">
               <Link to="/admin/profile">
                 <img
-                  src={logo}
+                  src={image}
                   className={`w-10 h-10 rounded-full border-2 shadow-lg cursor-pointer duration-500 ${open && "rotate-[360deg]"}`}
                 />
               </Link>

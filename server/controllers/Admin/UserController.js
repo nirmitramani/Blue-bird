@@ -1,6 +1,7 @@
 const User = require('../../schema/Client/UserSchema');
 const constant = require('../../config/Constant');
 const { deleteImage } = require('../../helper/function');
+const bcrypt = require('bcrypt');
 
 exports.index = async (req, res) => {
   try {
@@ -120,10 +121,35 @@ exports.statusChnage = (req, res) => {
 
 exports.counts = async (req, res) => {
   try {
-      const count = await User.countDocuments({});
-      res.json({ count });
+    const count = await User.countDocuments({});
+    res.json({ count });
   } catch (error) {
-      console.error('Error counting event:', error);
-      res.status(500).json({ error: 'Could not count event' });
+    console.error('Error counting event:', error);
+    res.status(500).json({ error: 'Could not count event' });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const existingUser = await User.findById(id);
+
+    if (!existingUser) {
+      return res.status(404).json({ status: false, message: 'User not found' });
+    }
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+    // existingUser.password = hashedPassword;
+    existingUser.password = req.body.password;
+
+    const updatedUser = await existingUser.save();
+
+    return res.status(200).json({
+      status: true,
+      message: constant.MSG_FOR_USER_UPDATE_SUCCESSFUL,
+      data: updatedUser,
+    });
+  } catch (error) {
+    return res.status(500).json({ status: false, message: error.message });
   }
 };
