@@ -190,9 +190,7 @@ const Products = () => {
                                                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                                     Name
                                                 </th>
-                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                                    Description
-                                                </th>
+
                                                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                                     Price
                                                 </th>
@@ -223,14 +221,6 @@ const Products = () => {
                                                         <div className="flex">
                                                             <div className="ml-3">
                                                                 <p className="text-gray-900 whitespace-no-wrap">{product.name}</p>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-
-                                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                        <div className="flex">
-                                                            <div className="ml-3">
-                                                                <p className="text-gray-600 whitespace-no-wrap">{product.description}</p>
                                                             </div>
                                                         </div>
                                                     </td>
@@ -275,8 +265,8 @@ const Products = () => {
                                                         </div>
                                                     </td>
 
-                                                    <td className='bg-white border-b'>
-                                                        <label className="relative inline-flex items-center cursor-pointer">
+                                                    <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
+                                                        <label className="relative inline-flex cursor-pointer">
                                                             <input type="checkbox" className="sr-only peer"
                                                                 id={`flexSwitchCheckChecked_${product._id}`}
                                                                 checked={switchStates[product._id] || false}

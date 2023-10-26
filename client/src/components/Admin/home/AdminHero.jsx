@@ -45,6 +45,9 @@ import ViewUser from '../modules/users/ViewUser';
 import Order from '../modules/orders/Orders';
 import ViewOrder from '../modules/orders/ViewOrder';
 
+import Review from '../modules/reviews/Reviews';
+import ViewReview from '../modules/reviews/ViewReview';
+
 import CouponCode from '../modules/coupon-code/CouponCode';
 import ViewCouponCode from '../modules/coupon-code/ViewCouponCode';
 import AddUpdateCouponCode from '../modules/coupon-code/AddUpdateCouponCode';
@@ -64,6 +67,7 @@ window.order_item_url = 'order-item';
 window.payment_detail_url = 'payment-detail';
 window.coupon_code_url = 'coupon-code';
 window.product_stock_size = 'product-stock-size';
+window.review_url = 'review';
 
 const AdminHero = () => {
   const [open, setOpen] = useState(true);
@@ -144,6 +148,10 @@ const AdminHero = () => {
             <Route path="admin/cms-pages" element={AuthElement('admin', <CmsPages />)} />
             <Route path="admin/cms-pages/update/:id" element={AuthElement('admin', <UpdateCmsPage />)} />
             <Route path="admin/cms-pages/view/:id" element={AuthElement('admin', <ViewCmsPage />)} />
+
+            //Review routes
+            <Route path="admin/review" element={AuthElement('admin', <Review />)} />
+            <Route path="admin/review/view/:id" element={AuthElement('admin', <ViewReview />)} />
           </Routes>
         </div>
       </div>

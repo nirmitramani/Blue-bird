@@ -11,7 +11,6 @@ import useAnimatedLoader from '../../hooks/useAnimatedLoader';
 import ConfirmDelete from '../../hooks/ConfirmDelete';
 import { usePagination, Pagination } from '../../hooks/Pagination';
 
-
 const Categories = () => {
 
     const [categories, setCategories] = useState([]);
@@ -210,8 +209,8 @@ const Categories = () => {
                                                         />
 
                                                     </td>
-                                                    <td className='bg-white border-b'>
-                                                        <label className="relative inline-flex items-center cursor-pointer">
+                                                    <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
+                                                        <label className="relative inline-flex cursor-pointer">
                                                             <input type="checkbox" className="sr-only peer"
                                                                 id={`flexSwitchCheckChecked_${category._id}`}
                                                                 checked={switchStates[category._id] || false}

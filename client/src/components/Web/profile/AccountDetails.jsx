@@ -141,17 +141,12 @@ const AccountDetails = () => {
 
     return (
         <div>
-            {loading && <Loader />}
-
-            <div className="flex flex-wrap font-montserrat">
-                <div className="w-full md:w-1/3">
-                    <UserProfile />
-                </div>
-                <div className="w-[50%] mt-20">
+            {loading && <Loader />}              
+                <div className="">
                     <div className="w-full flex flex-col relative">
                         <form className="w-full mx-auto flex flex-col justify-center" onSubmit={handleSubmit}>
                             <div className='flex flex-row justify-between'>
-                                <p className="text-lg md:text-xl xl:text-2xl font-bold text-heading mb-6 xl:mb-8">Account Details</p>
+                                <p className="text-lg md:text-xl xl:text-2xl font-bold text-heading mb-6 xl:mb-8">Good Morning {formData.userName}</p>
                                 {isEditing ?
                                     (
                                         <button
@@ -271,18 +266,17 @@ const AccountDetails = () => {
                                         />
                                     </div>
                                 </div>
-                                {isEditing &&
-                                    <button
-                                        type='submit'
-                                        className='bg-black text-white mt-3 px-4 py-1 w-24'
-                                    >
-                                        SAVE
-                                    </button>
-                                }
+                            {isEditing &&
+                                <button
+                                    type='submit'
+                                    className='bg-black text-white mt-3 px-4 py-1 w-24'
+                                >
+                                    SAVE
+                                </button>
+                            }
                             </div>
                         </form>
                     </div>
-                </div>
             </div >
         </div >
     )
