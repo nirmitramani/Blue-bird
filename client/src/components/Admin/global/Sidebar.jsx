@@ -25,6 +25,7 @@ const Sidebar = ({ open, setOpen }) => {
         { title: "Events", icon: <BsCalendar2Event />, link: "/admin/events" },
         { title: "Product Category", icon: <BiCategoryAlt />, link: "/admin/product-categories" },
         { title: "CMS Pages", icon: <BiSelectMultiple />, link: "/admin/cms-pages" },
+        { title: "Reviews", icon: <BiSelectMultiple />, link: "/admin/review" },
     ];
     const isMenuActive = (link) => location.pathname.includes(link);
 

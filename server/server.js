@@ -18,6 +18,7 @@ const orderItem = require('./routes/Client/OrderItem');
 const paymentDetail = require('./routes/Client/PaymentDetail');
 const couponCode = require('./routes/Admin/CouponCode');
 const productStockAndSize = require('./routes/Admin/ProductStockAndSize');
+const Review = require('./routes/Client/Review');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
@@ -45,6 +46,7 @@ app.use('/order-item', orderItem);
 app.use('/payment-detail', paymentDetail);
 app.use('/coupon-code', couponCode);
 app.use('/product-stock-size', productStockAndSize);
+app.use('/review', Review);
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
