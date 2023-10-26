@@ -39,7 +39,6 @@ import UpdateCmsPage from '../modules/cms-pages/UpdateCmsPage'
 import ViewCmsPage from '../modules/cms-pages/ViewCmsPage'
 
 import Users from '../modules/users/Users';
-import AddUpdateUser from '../modules/users/AddUpdateUser';
 import ViewUser from '../modules/users/ViewUser';
 
 import Order from '../modules/orders/Orders';
@@ -90,8 +89,6 @@ const AdminHero = () => {
 
             //Users route
             <Route path="admin/users" element={AuthElement('admin', <Users />)} />
-            <Route path="/admin/users/add" element={AuthElement('admin', <AddUpdateUser />)} />
-            <Route path="/admin/users/update/:id" element={AuthElement('admin', <AddUpdateUser />)} />
             <Route path="/admin/users/view/:id" element={AuthElement('admin', <ViewUser />)} />
 
             //Slider routes
