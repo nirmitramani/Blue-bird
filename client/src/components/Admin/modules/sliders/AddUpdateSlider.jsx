@@ -43,14 +43,14 @@ const AddUpdateSlider = () => {
         if (name === 'sliderimg') {
             const file = files[0];
             if (file) {
-                if (file.type === 'image/jpeg' || file.type === 'image/png') {
+                if (file.type === 'image/jpeg' || file.type === 'image/png'|| file.type === 'image/webp') {
                     setFormData({
                         ...formData,
                         [name]: file,
                     });
                 } else {
                     e.target.value = null;
-                    toast.error('Please select a jpg or png image.');
+                    toast.error('Please select a jpg, webp or png image.');
                 }
             }
         } else {

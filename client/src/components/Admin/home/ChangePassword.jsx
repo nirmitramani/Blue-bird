@@ -10,12 +10,14 @@ const ChangePassword = () => {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
+        oldPassword: '', // Add the Old Password field
         password: '',
         confirmPassword: '',
     });
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [showOldPassword, setShowOldPassword] = useState(false);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -33,10 +35,26 @@ const ChangePassword = () => {
         setShowConfirmPassword(!showConfirmPassword);
     };
 
+    const toggleOldPasswordVisibility = () => {
+        setShowOldPassword(!showOldPassword);
+    };
+
+    const resetForm = () => {
+        setFormData({
+            oldPassword: '',
+            password: '',
+            confirmPassword: '',
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!formData.password.trim() || !formData.confirmPassword.trim()) {
+        if (
+            !formData.oldPassword.trim() ||
+            !formData.password.trim() ||
+            !formData.confirmPassword.trim()
+        ) {
             toast.error('All fields are required.', {
                 position: 'top-right',
                 autoClose: 5000,
@@ -64,12 +82,42 @@ const ChangePassword = () => {
             return;
         }
 
-        const res = await axios
-            .put(`${window.react_app_url + window.user_url + '/change-password'}/${id}`, {
-                password: formData.password,
-            });
-        if (res.data.status) {
-            toast.success(res.data.message, {
+        try {
+            const response = await axios.put(
+                `${window.react_app_url + window.user_url + '/change-password'}/${id}`,
+                {
+                    password: formData.password,
+                    oldPassword: formData.oldPassword
+                }
+            );
+
+            if (response.data.status === false) {
+                toast.error(response.data.message, {
+                    position: 'top-right',
+                    autoClose: 5000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: 'dark',
+                });
+            }
+            else {
+                toast.success(response.data.message, {
+                    position: 'top-right',
+                    autoClose: 5000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: 'dark',
+                });
+                navigate('/admin/dashboard');
+            }
+        } catch (error) {
+            toast.error('Error updating password', {
                 position: 'top-right',
                 autoClose: 5000,
                 hideProgressBar: true,
@@ -79,7 +127,6 @@ const ChangePassword = () => {
                 progress: undefined,
                 theme: 'dark',
             });
-            navigate('/admin/dashboard');
         }
     };
 
@@ -92,7 +139,34 @@ const ChangePassword = () => {
                             <form onSubmit={handleSubmit}>
                                 <div className="mx-24 space-y-4">
                                     <div>
-                                        <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                        <label
+                                            htmlFor="oldPassword"
+                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Old Password
+                                        </label>
+                                        <div className="relative">
+                                            <input
+                                                type={showOldPassword ? 'text' : 'password'}
+                                                id="oldPassword"
+                                                name="oldPassword"
+                                                value={formData.oldPassword}
+                                                onChange={handleInputChange}
+                                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                            />
+                                            <span
+                                                onClick={toggleOldPasswordVisibility}
+                                                className="absolute text-lg top-3 right-4 cursor-pointer"
+                                            >
+                                                {showOldPassword ? <FaEye /> : <FaEyeSlash />}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label
+                                            htmlFor="password"
+                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >
                                             New Password
                                         </label>
                                         <div className="relative">
@@ -113,7 +187,10 @@ const ChangePassword = () => {
                                         </div>
                                     </div>
                                     <div>
-                                        <label htmlFor="confirmPassword" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                        <label
+                                            htmlFor="confirmPassword"
+                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >
                                             Confirm Password
                                         </label>
                                         <div className="relative">
@@ -136,7 +213,7 @@ const ChangePassword = () => {
                                 </div>
                                 <div className="ml-20 mt-12">
                                     <Button label="Update" type="submit" width="48" bgColor="blue" />
-                                    <Button label="Reset" type="reset" width="48" bgColor="red" />
+                                    <Button label="Reset" type="reset" onClick={resetForm} width="48" bgColor="red" />
                                 </div>
                             </form>
                         </div>
