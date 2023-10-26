@@ -5,14 +5,13 @@ import Button from '../../hooks/Button';
 import BreadCrumb from '../../hooks/BreadCrumb';
 import { toast } from 'react-toastify';
 import useLoader from '../../hooks/useLoader';
-
+import Select from 'react-select';
 
 const AddUpdateProduct = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const { loading, startLoading, stopLoading, Loader } = useLoader();
     const [productCategories, setProductCategories] = useState([]);
-
     const initialFormData = {
         name: '',
         description: '',
@@ -21,9 +20,7 @@ const AddUpdateProduct = () => {
         productimg: null,
         productthumbimg: null
     };
-
     const [formData, setFormData] = useState(initialFormData);
-
     const [dataFetched, setDataFetched] = useState(false);
 
     useEffect(() => {
@@ -32,7 +29,9 @@ const AddUpdateProduct = () => {
             axios
                 .get(`${window.react_app_url + window.product_url}/${id}`)
                 .then((response) => {
-                    response.data.status ? setFormData(response.data.data) : console.error('Error fetching product data:', error);
+                    response.data.status
+                        ? setFormData(response.data.data)
+                        : console.error('Error fetching product data:', error);
 
                     stopLoading();
                     setDataFetched(true);
@@ -45,37 +44,44 @@ const AddUpdateProduct = () => {
         }
     }, [id, dataFetched, navigate]);
 
-
     useEffect(() => {
-        axios.get(`${window.react_app_url + window.product_category_url}`)
-            .then(response => {
+        axios
+            .get(`${window.react_app_url + window.product_category_url}`)
+            .then((response) => {
                 setProductCategories(response.data.data);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Error fetching product data:', error);
             });
-    });
-
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
         if (name === 'productimg') {
             const file = files[0];
             if (file) {
-                if (file.type === 'image/jpeg' || file.type === 'image/png'|| file.type === 'image/webp') {
+                if (
+                    file.type === 'image/jpeg' ||
+                    file.type === 'image/png' ||
+                    file.type === 'image/webp'
+                ) {
                     setFormData({
                         ...formData,
                         [name]: file,
                     });
                 } else {
                     e.target.value = null;
-                    toast.error('Please select a jpg, webp or png image.');
+                    toast.error('Please select a jpg, webp, or png image.');
                 }
             }
         } else if (name === 'productthumbimg') {
             const file = files[0];
             if (file) {
-                if (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp') {
+                if (
+                    file.type === 'image/jpeg' ||
+                    file.type === 'image/png' ||
+                    file.type === 'image/webp'
+                ) {
                     setFormData({
                         ...formData,
                         productthumbimg: Array.from(files),
@@ -84,12 +90,12 @@ const AddUpdateProduct = () => {
                     e.target.value = null;
                     toast.error('Please select a jpg / png / jpeg / webp image.');
                 }
+            } else {
+                setFormData({
+                    ...formData,
+                    [name]: value,
+                });
             }
-        } else {
-            setFormData({
-                ...formData,
-                [name]: value,
-            });
         }
     };
 
@@ -114,11 +120,15 @@ const AddUpdateProduct = () => {
                     navigate('/admin/products');
                 }
                 if (dataFetched) {
-                    const response = await axios.put(`${window.react_app_url + window.product_url}/${id}`, formDataToSend, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                        },
-                    });
+                    const response = await axios.put(
+                        `${window.react_app_url + window.product_url}/${id}`,
+                        formDataToSend,
+                        {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                            },
+                        }
+                    );
                     toast.success(response.data.message, {
                         position: 'top-right',
                         autoClose: 5000,
@@ -150,7 +160,7 @@ const AddUpdateProduct = () => {
                 }
 
                 if (hasMissingFields) {
-                    toast.warning('Please fill in all required fields.', {
+                    toast.warning('Please fill in all required fields', {
                         position: 'top-right',
                         autoClose: 5000,
                         hideProgressBar: true,
@@ -163,11 +173,15 @@ const AddUpdateProduct = () => {
                     return;
                 }
 
-                const response = await axios.post(`${window.react_app_url + window.product_url}`, formDataToSend, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
+                const response = await axios.post(
+                    `${window.react_app_url + window.product_url}`,
+                    formDataToSend,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    }
+                );
 
                 toast.success(response.data.message, {
                     position: 'top-right',
@@ -193,8 +207,7 @@ const AddUpdateProduct = () => {
                 progress: undefined,
                 theme: 'dark',
             });
-        }
-        finally {
+        } finally {
             stopLoading();
         }
     };
@@ -215,7 +228,6 @@ const AddUpdateProduct = () => {
                         <label htmlFor="name" className="mt-4 block text-sm font-medium text-gray-900">
                             Name
                         </label>
-                        {name}
                         <input
                             type="text"
                             id="name"
@@ -249,64 +261,21 @@ const AddUpdateProduct = () => {
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             placeholder="Enter Price"
                         />
-                        <label htmlFor="stockquantity" className="mt-4 block text-sm font-medium text-gray-900 ">
-                            Stock Quantity
-                        </label>
-                        <input
-                            type="number"
-                            id="stockquantity"
-                            name="stockquantity"
-                            value={formData.stockquantity}
-                            onChange={handleInputChange}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                            placeholder="Enter Stock Quantity"
-                        />
                         <label htmlFor="category" className="mt-4 block text-sm font-medium text-gray-900">
                             Product Category
                         </label>
-                        <select
+                        <Select
                             id="category"
                             name="categoryid"
-                            value={formData.categoryid}
-                            onChange={handleInputChange}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                        >
-                            <option value="">Select Product Category</option>
-                            {productCategories.length > 0 ? (
-                                <>
-                                    <optgroup label="Male">
-                                        {productCategories.map((category) => {
-                                            if (category.gender === "male") {
-                                                return (
-                                                    <option key={category._id} value={category._id}>
-                                                        {category.name}
-                                                    </option>
-                                                );
-                                            }
-                                            return null;
-                                        })}
-                                    </optgroup>
-                                    <optgroup label="Female">
-                                        {productCategories.map((category) => {
-                                            if (category.gender === "female") {
-                                                return (
-                                                    <option key={category._id} value={category._id}>
-                                                        {category.name}
-                                                    </option>
-                                                );
-                                            }
-                                            return null;
-                                        })}
-                                    </optgroup>
-                                </>
-                            ) : (
-                                <option value="" disabled>
-                                    No category
-                                </option>
-                            )}
-                        </select>
+                            value={productCategories.find((category) => category._id === formData.categoryid)}
+                            onChange={(selectedOption) =>
+                                setFormData({ ...formData, categoryid: selectedOption ? selectedOption.value : '' })
+                            }
+                            options={getCategoryOptions(productCategories)}
+                            isSearchable
+                            isClearable
+                        />
                     </div>
-
                     <div>
                         <label htmlFor="productimg" className="mt-4 block text-sm font-medium text-gray-900 ">
                             Product Image
@@ -335,15 +304,44 @@ const AddUpdateProduct = () => {
                 </div>
                 <div className="ml-20 mt-12">
                     <Button label="Submit" type="submit" width="32" bgColor="blue" />
-                    <Button label="Reset" type="reset"
+                    <Button
+                        label="Reset"
+                        type="reset"
                         onClick={() => {
-                            setFormData(initialFormData)
+                            setFormData(initialFormData);
                         }}
-                        width="32" bgColor="red" />
+                        width="32"
+                        bgColor="red"
+                    />
                 </div>
             </form>
         </>
     );
+};
+
+const getCategoryOptions = (categories) => {
+    const groupedOptions = [
+        {
+            label: 'Male',
+            options: categories
+                .filter((category) => category.gender === 'male')
+                .map((category) => ({
+                    value: category._id,
+                    label: category.name,
+                })),
+        },
+        {
+            label: 'Female',
+            options: categories
+                .filter((category) => category.gender === 'female')
+                .map((category) => ({
+                    value: category._id,
+                    label: category.name,
+                })),
+        },
+    ];
+
+    return groupedOptions;
 };
 
 export default AddUpdateProduct;
