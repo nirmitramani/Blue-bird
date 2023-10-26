@@ -42,6 +42,20 @@ const ChangePassword = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        if (!formData.password.trim() || !formData.confirmPassword.trim()) {
+            toast.error('All fields are required.', {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
+            return;
+        }
 
         if (formData.password !== formData.confirmPassword) {
             toast.error("Passwords don't match", {
@@ -129,13 +143,13 @@ const ChangePassword = () => {
                                 </div>
                                 <div className="ml-20 mt-12">
                                     <Button label="Update" type="submit" width="48" bgColor="blue" />
-                                    <button
+                                    <Button
+                                        label="Reset"
                                         type="button"
+                                        width="48"
                                         onClick={resetForm}
-                                        className="ml-2 p-2.5 text-blue-600 hover:text-blue-800"
-                                    >
-                                        Reset
-                                    </button>
+                                        bgColor="gray"
+                                    />
                                 </div>
                             </form>
                         </div>
