@@ -1,6 +1,7 @@
 const User = require('../../schema/Client/UserSchema');
 const constant = require('../../config/Constant');
 const { deleteImage } = require('../../helper/function');
+const bcrypt = require('bcrypt');
 
 exports.index = async (req, res) => {
   try {
@@ -14,36 +15,6 @@ exports.index = async (req, res) => {
     res.json({ status: false, message: error.message });
   }
 };
-
-// exports.store = async (req, res) => {
-//   try {
-//     const productimgFilename = req.files.find(file => file.fieldname === 'productimg').filename;
-//     const productthumbimg = [];
-
-//     for (const file of req.files) {
-//       if (file.fieldname.startsWith('productthumbimg_')) {
-//         productthumbimg.push(file.filename);
-//       }
-//     }
-//     const productData = {
-//       productimg: productimgFilename,
-//       productthumbimg: productthumbimg,
-//       name: req.body.name,
-//       description: req.body.description,
-//       stockquantity: req.body.stockquantity,
-//       categoryid: req.body.categoryid,
-//       price: req.body.price,
-//     };
-//     const createdProduct = await User.create(productData);
-//     res.status(201).json({
-//       status: true,
-//       message: constant.MSG_FOR_USER_ADD_SUCCEESFULL,
-//       data: createdProduct,
-//     });
-//   } catch (error) {
-//     res.json({ status: false, message: error.message });
-//   }
-// };
 
 exports.show = async (req, res) => {
   try {
@@ -77,6 +48,7 @@ exports.update = async (req, res) => {
     existingUser.userName = req.body.userName;
     existingUser.email = req.body.email;
     existingUser.phone = req.body.phone;
+    existingUser.gender = req.body.gender;
 
     const updatedUser = await existingUser.save();
 
@@ -120,10 +92,34 @@ exports.statusChnage = (req, res) => {
 
 exports.counts = async (req, res) => {
   try {
-      const count = await User.countDocuments({});
-      res.json({ count });
+    const count = await User.countDocuments({});
+    res.json({ count });
   } catch (error) {
-      console.error('Error counting event:', error);
-      res.status(500).json({ error: 'Could not count event' });
+    console.error('Error counting event:', error);
+    res.status(500).json({ error: 'Could not count event' });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const existingUser = await User.findById(id);
+
+    if (!existingUser) {
+      return res.status(404).json({ status: false, message: 'User not found' });
+    }
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+    existingUser.password = hashedPassword;
+
+    const updatedUser = await existingUser.save();
+
+    return res.status(200).json({
+      status: true,
+      message: constant.MSG_FOR_USER_UPDATE_SUCCESSFUL,
+      data: updatedUser,
+    });
+  } catch (error) {
+    return res.status(500).json({ status: false, message: error.message });
   }
 };

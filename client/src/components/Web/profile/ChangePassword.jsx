@@ -27,7 +27,12 @@ const ChangePassword = () => {
                                         </div>
                                     </div>
                                     <div className="relative">
-                                        <button className="bg-gray-700 text-[13px] md:text-sm leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold font-body text-center justify-center border-0 border-transparent placeholder-white focus-visible:outline-none focus:outline-none rounded-md  bg-heading text-white px-5 md:px-6 lg:px-8 py-4 md:py-3.5 lg:py-4 hover:text-white hover:bg-gray-600 hover:shadow-cart h-13 mt-3" type="submit">Change Password</button>
+                                        <button
+                                            type='submit'
+                                            className='bg-black text-white mt-3 px-6 py-3 w-56'
+                                        >
+                                            CHANGE PASSWORD
+                                        </button>
                                     </div>
                                 </div>
                             </form>

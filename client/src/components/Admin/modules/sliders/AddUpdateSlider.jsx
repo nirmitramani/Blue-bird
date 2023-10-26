@@ -17,30 +17,42 @@ const AddUpdateSlider = () => {
     };
 
     const [formData, setFormData] = useState(initialFormData);
+    const [dataFetched, setDataFetched] = useState(false);
 
     useEffect(() => {
-        if (id) {
+        if (id && !dataFetched) {
             startLoading();
-            axios.get(`${window.react_app_url + window.slider_url}/${id}`)
+            axios
+                .get(`${window.react_app_url + window.slider_url}/${id}`)
                 .then((response) => {
                     const { title } = response.data.data;
                     setFormData({ title });
                     stopLoading();
+                    setDataFetched(true);
                 })
-                .catch(error => {
+                .catch((error) => {
                     console.error('Error fetching data:', error);
                     stopLoading();
+                    navigate('/admin/sliders');
                 });
         }
-    }, [id]);
+    }, [id, dataFetched, navigate]);
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
         if (name === 'sliderimg') {
-            setFormData({
-                ...formData,
-                [name]: files[0],
-            });
+            const file = files[0];
+            if (file) {
+                if (file.type === 'image/jpeg' || file.type === 'image/png') {
+                    setFormData({
+                        ...formData,
+                        [name]: file,
+                    });
+                } else {
+                    e.target.value = null;
+                    toast.error('Please select a jpg or png image.');
+                }
+            }
         } else {
             setFormData({
                 ...formData,
@@ -58,21 +70,26 @@ const AddUpdateSlider = () => {
 
         try {
             if (id) {
-                const response = await axios.put(`${window.react_app_url + window.slider_url}/${id}`, formDataToSend, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-                toast.success(response.data.message, {
-                    position: 'top-right',
-                    autoClose: 5000,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: 'dark',
-                });
+                if (!dataFetched) {
+                    navigate('/admin/sliders');
+                }
+                if (dataFetched) {
+                    const response = await axios.put(`${window.react_app_url + window.slider_url}/${id}`, formDataToSend, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    });
+                    toast.success(response.data.message, {
+                        position: 'top-right',
+                        autoClose: 5000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'dark',
+                    });
+                }
             } else {
                 const requiredFields = ['title', 'sliderimg'];
                 let hasMissingFields = false;
@@ -117,19 +134,6 @@ const AddUpdateSlider = () => {
             }
             navigate('/admin/sliders');
         } catch (error) {
-            // if (error.response) {
-            //     const errorMessage = error.response.data.message;
-            //     toast.error(errorMessage, {
-            //         position: 'top-right',
-            //         autoClose: 5000,
-            //         hideProgressBar: true,
-            //         closeOnClick: true,
-            //         pauseOnHover: true,
-            //         draggable: true,
-            //         progress: undefined,
-            //         theme: 'dark',
-            //     });
-            // }
             toast.error(error, {
                 position: 'top-right',
                 autoClose: 5000,

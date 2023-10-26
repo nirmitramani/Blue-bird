@@ -18,31 +18,42 @@ const AddUpdateEvent = () => {
   };
 
   const [formData, setFormData] = useState(initialFormData);
-
+  const [dataFetched, setDataFetched] = useState(false);
 
   useEffect(() => {
-    if (id) {
+    if (id && !dataFetched) {
       startLoading();
-      axios.get(`${window.react_app_url + window.event_url}/${id}`)
+      axios
+        .get(`${window.react_app_url + window.event_url}/${id}`)
         .then((response) => {
-          response.data.status ? setFormData(response.data.data) : console.error('Error fetching product data:', error);
+          const { name, description } = response.data.data;
+          setFormData({ name, description });
           stopLoading();
+          setDataFetched(true);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error('Error fetching data:', error);
           stopLoading();
+          navigate('/admin/events');
         });
     }
-  }, [id]);
-
+  }, [id, dataFetched, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
     if (name === 'eventimg') {
-      setFormData({
-        ...formData,
-        [name]: files[0],
-      });
+      const file = files[0];
+      if (file) {
+        if (file.type === 'image/jpeg' || file.type === 'image/png') {
+          setFormData({
+            ...formData,
+            [name]: file,
+          });
+        } else {
+          e.target.value = null;
+          toast.error('Please select a jpg or png image.');
+        }
+      }
     } else {
       setFormData({
         ...formData,
@@ -54,29 +65,51 @@ const AddUpdateEvent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     startLoading();
+    
     const formDataToSend = new FormData();
-    formDataToSend.append('name', formData.name);
-    formDataToSend.append('description', formData.description);
+    formDataToSend.append('name', formData.name.trim());
+    formDataToSend.append('description', formData.description.trim());
     formDataToSend.append('eventimg', formData.eventimg);
+
+    // if (!formData.name.trim() || !formData.description.trim() || !formData.eventimg) {
+    //   toast.warning('Please fill in all required fields.', {
+    //     position: 'top-right',
+    //     autoClose: 5000,
+    //     hideProgressBar: true,
+    //     closeOnClick: true,
+    //     pauseOnHover: true,
+    //     draggable: true,
+    //     progress: undefined,
+    //     theme: 'dark',
+    //   });
+    //   stopLoading();
+    //   return;
+    // }
 
     try {
       if (id) {
-        // Update existing event
-        const response = await axios.put(`${window.react_app_url + window.event_url}/${id}`, formDataToSend, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        toast.success(response.data.message, {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'dark',
-        });
+
+        if (!dataFetched) {
+          navigate('/admin/events');
+        }
+        if (dataFetched) {
+          const response = await axios.put(`${window.react_app_url + window.event_url}/${id}`, formDataToSend,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            });
+          toast.success(response.data.message, {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'dark',
+          });
+        }
       } else {
         const requiredFields = ['name', 'description', 'eventimg'];
         let hasMissingFields = false;
@@ -120,7 +153,6 @@ const AddUpdateEvent = () => {
       }
       navigate('/admin/events');
     } catch (error) {
-      console.error('Error:', error);
       toast.error(error, {
         position: 'top-right',
         autoClose: 5000,

@@ -9,6 +9,7 @@ import BreadCrumb from '../../hooks/BreadCrumb';
 import useDragAndDrop from '../../hooks/useDragAndDrop';
 import useAnimatedLoader from '../../hooks/useAnimatedLoader';
 import ConfirmDelete from '../../hooks/ConfirmDelete';
+import { usePagination, Pagination } from '../../hooks/Pagination';
 
 const Event = () => {
     const [events, setEvents] = useState([]);
@@ -50,6 +51,7 @@ const Event = () => {
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
+        handlePageChange(1)
     };
 
     const handleStatusChange = (id) => {
@@ -113,6 +115,8 @@ const Event = () => {
         });
     }, [events, searchQuery]);
 
+    const { currentPage, totalPages, handlePageChange, currentItems } = usePagination(filteredEvents);
+
     return (
         <>
 
@@ -148,7 +152,7 @@ const Event = () => {
                     <Loader />
                 ) : (
                     <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
-                        {filteredEvents.length > 0 ? (
+                        {currentItems.length > 0 ? (
                             <div className="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
                                 <table className="min-w-full leading-normal">
                                     <thead>
@@ -171,13 +175,13 @@ const Event = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {filteredEvents.map((event, index) => (
+                                        {currentItems.map((event, index) => (
                                             <tr
                                                 key={event._id}
                                                 draggable
                                                 onDragStart={() => handleDragStart(event)}
                                                 onDragOver={(e) => e.preventDefault()}
-                                                onDrop={() => handleDragEnd(index, filteredEvents, setEvents)}
+                                                onDrop={() => handleDragEnd(index, currentItems, setEvents)}
                                             >
                                                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                     <div className="flex">
@@ -245,6 +249,11 @@ const Event = () => {
                         ) : (
                             <p className="text-center text-gray-500">No data found</p>
                         )}
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            handlePageChange={handlePageChange}
+                        />
                     </div>
                 )}
             </div>

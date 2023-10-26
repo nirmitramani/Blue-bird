@@ -4,10 +4,12 @@ import axios from 'axios';
 import Button from '../../hooks/Button';
 import BreadCrumb from '../../hooks/BreadCrumb';
 import { toast } from 'react-toastify';
+import useLoader from '../../hooks/useLoader';
 
 const AddUpdateUser = () => {
     const navigate = useNavigate();
     const { id } = useParams();
+    const { loading, startLoading, stopLoading, Loader } = useLoader();
 
     const [formData, setFormData] = useState({
         userName: '',
@@ -15,20 +17,28 @@ const AddUpdateUser = () => {
         phone: '',
         profileimg: null,
     });
-    
+
     const [users, setUsers] = useState([]);
+    const [dataFetched, setDataFetched] = useState(false);
 
     useEffect(() => {
-        if (id) {
-            axios.get(`${window.react_app_url + window.user_url}/${id}`)
-                .then(response => {
-                    response.data.status ? setFormData(response.data.data) : console.error('Error fetching user data:', error);
+        if (id && !dataFetched) {
+            startLoading();
+            axios
+                .get(`${window.react_app_url + window.user_url}/${id}`)
+                .then((response) => {
+                    response.data.status ? setFormData(response.data.data)
+                        : console.error('Error fetching user data');
+                    stopLoading();
+                    setDataFetched(true);
                 })
-                .catch(error => {
-                    console.error('Error fetching user data:', error);
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
+                    stopLoading();
+                    navigate('/admin/users');
                 });
         }
-    }, [id]);
+    }, [id, dataFetched, navigate]);
 
     // useEffect(() => {
     //     axios.get(`${window.react_app_url + window.user_category_url}`)
@@ -43,10 +53,18 @@ const AddUpdateUser = () => {
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
         if (name === 'profileimg') {
-            setFormData({
-                ...formData,
-                [name]: files[0],
-            });
+            const file = files[0];
+            if (file) {
+                if (file.type === 'image/jpeg' || file.type === 'image/png') {
+                    setFormData({
+                        ...formData,
+                        [name]: file,
+                    });
+                } else {
+                    e.target.value = null;
+                    toast.error('Please select a jpg or png image.');
+                }
+            }
         } else {
             setFormData({
                 ...formData,
@@ -57,7 +75,7 @@ const AddUpdateUser = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        startLoading();
         const formDataToSend = new FormData();
 
         for (const key in formData) {
@@ -72,22 +90,26 @@ const AddUpdateUser = () => {
 
         try {
             if (id) {
-                // Update existing user
-                const response = await axios.put(`${window.react_app_url + window.user_url}/${id}`, formDataToSend, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-                toast.success(response.data.message, {
-                    position: 'top-right',
-                    autoClose: 5000,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: 'dark',
-                });
+                if (!dataFetched) {
+                    navigate('/admin/users');
+                }
+                if (dataFetched) {
+                    const response = await axios.put(`${window.react_app_url + window.user_url}/${id}`, formDataToSend, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    });
+                    toast.success(response.data.message, {
+                        position: 'top-right',
+                        autoClose: 5000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'dark',
+                    });
+                }
             } else {
                 const requiredFields = [
                     'userName',
@@ -150,10 +172,14 @@ const AddUpdateUser = () => {
                 theme: 'dark',
             });
         }
+        finally {
+            stopLoading();
+        }
     };
 
     return (
         <>
+            {loading && <Loader />}
             <div className="p-6 flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between">
                 <div className="mr-6">
                     <BreadCrumb title="User / " desc={id ? 'Update User' : 'Add User'} link="/admin/users" />

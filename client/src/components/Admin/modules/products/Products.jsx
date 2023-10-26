@@ -61,7 +61,7 @@ const Products = () => {
             })
             .catch(err => {
                 console.log(err);
-                stopAnimatedLoading()
+                setLoading(false);
             });
     }, []);
 
@@ -132,7 +132,7 @@ const Products = () => {
         });
     }, [products, searchQuery]);
 
-    const { currentPage, totalPages, handlePageChange, currentProducts } = usePagination(filteredProducts);
+    const { currentPage, totalPages, handlePageChange, currentItems } = usePagination(filteredProducts);
 
     return (
         <>
@@ -199,6 +199,9 @@ const Products = () => {
                                                 Category Name
                                             </th>
                                             <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                                Stock Quantity
+                                            </th>
+                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                                 Image
                                             </th>
                                             <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
@@ -226,40 +229,49 @@ const Products = () => {
                                                     </div>
                                                 </td>
 
-                                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                    <div className="flex">
-                                                        <div className="ml-3">
-                                                            <p className="text-gray-600 whitespace-no-wrap">{product.description}</p>
+                                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                        <div className="flex">
+                                                            <div className="ml-3">
+                                                                <p className="text-gray-600 whitespace-no-wrap">{product.description}</p>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </td>
+                                                    </td>
 
-                                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                    <div className="flex">
-                                                        <div className="ml-3">
-                                                            <p className="text-gray-600 whitespace-no-wrap">{product.price}</p>
+                                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                        <div className="flex">
+                                                            <div className="ml-3">
+                                                                <p className="text-gray-600 whitespace-no-wrap">{product.price}</p>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </td>
+                                                    </td>
+
+                                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                        <div className="flex">
+                                                            <div className="ml-3">
+                                                                <p className="text-gray-600 whitespace-no-wrap">
+                                                                    {product.categoryid
+                                                                        ? (
+                                                                            categories.find(category => category._id === product.categoryid)
+                                                                                ? categories.find(category => category._id === product.categoryid).name
+                                                                                : (
+                                                                                    <span>
+                                                                                        Category not found
+                                                                                    </span>
+                                                                                )
+                                                                        )
+                                                                        : "Category not found"
+                                                                    }
+                                                                </p>
+
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
 
                                                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                     <div className="flex">
                                                         <div className="ml-3">
-                                                            <p className="text-gray-600 whitespace-no-wrap">
-                                                                {product.categoryid
-                                                                    ? (
-                                                                        categories.find(category => category._id === product.categoryid)
-                                                                            ? categories.find(category => category._id === product.categoryid).name
-                                                                            : (
-                                                                                <span>
-                                                                                    Category not found
-                                                                                </span>
-                                                                            )
-                                                                    )
-                                                                    : "Category not found"
-                                                                }
-                                                            </p>
-
+                                                            <p className="text-gray-600 whitespace-no-wrap">{product.stockquantity}</p>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -274,59 +286,59 @@ const Products = () => {
                                                     </div>
                                                 </td>
 
-                                                <td className='bg-white border-b'>
-                                                    <label className="relative inline-flex items-center cursor-pointer">
-                                                        <input type="checkbox" className="sr-only peer"
-                                                            id={`flexSwitchCheckChecked_${product._id}`}
-                                                            checked={switchStates[product._id] || false}
-                                                            onChange={() => handleStatusChange(product._id)}
-                                                        />
-                                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                                    </label>
-                                                </td>
+                                                    <td className='bg-white border-b'>
+                                                        <label className="relative inline-flex items-center cursor-pointer">
+                                                            <input type="checkbox" className="sr-only peer"
+                                                                id={`flexSwitchCheckChecked_${product._id}`}
+                                                                checked={switchStates[product._id] || false}
+                                                                onChange={() => handleStatusChange(product._id)}
+                                                            />
+                                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                                        </label>
+                                                    </td>
 
-                                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm space-x-2">
-                                                    <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                                                        <span aria-hidden className="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                        <span className="relative">
-                                                            <Link to={`update/${product._id}`}>
-                                                                Edit
-                                                            </Link>
+                                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm space-x-2">
+                                                        <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                            <span aria-hidden className="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                            <span className="relative">
+                                                                <Link to={`update/${product._id}`}>
+                                                                    Edit
+                                                                </Link>
+                                                            </span>
                                                         </span>
-                                                    </span>
-                                                    <span className="relative inline-block px-3 py-1 font-semibold text-yellow-900 leading-tight">
-                                                        <span aria-hidden className="absolute inset-0 bg-yellow-200 opacity-50 rounded-full"></span>
-                                                        <span className="relative">
-                                                            <Link to={`view/${product._id}`}>
-                                                                <button>View</button>
-                                                            </Link>
+                                                        <span className="relative inline-block px-3 py-1 font-semibold text-yellow-900 leading-tight">
+                                                            <span aria-hidden className="absolute inset-0 bg-yellow-200 opacity-50 rounded-full"></span>
+                                                            <span className="relative">
+                                                                <Link to={`view/${product._id}`}>
+                                                                    <button>View</button>
+                                                                </Link>
+                                                            </span>
                                                         </span>
-                                                    </span>
-                                                    <span className="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
-                                                        <span aria-hidden className="absolute inset-0 bg-red-200 opacity-50 rounded-full"></span>
-                                                        <span className="relative">
-                                                            <button onClick={() => handleDelete(product._id)}>
-                                                                Delete
-                                                            </button>
+                                                        <span className="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
+                                                            <span aria-hidden className="absolute inset-0 bg-red-200 opacity-50 rounded-full"></span>
+                                                            <span className="relative">
+                                                                <button onClick={() => handleDelete(product._id)}>
+                                                                    Delete
+                                                                </button>
+                                                            </span>
                                                         </span>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <Pagination
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    handlePageChange={handlePageChange}
+                                />
+                            </>
                         ) : (
                             <p className="text-center text-gray-500">No data found</p>
                         )}
                     </div>
-
                 )}
-                <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    handlePageChange={handlePageChange}
-                />
             </div>
         </>
     );

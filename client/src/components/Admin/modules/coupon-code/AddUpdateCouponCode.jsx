@@ -4,10 +4,12 @@ import axios from 'axios';
 import Button from '../../hooks/Button';
 import BreadCrumb from '../../hooks/BreadCrumb';
 import { toast } from 'react-toastify';
+import useLoader from '../../hooks/useLoader';
 
 const AddUpdateCouponCode = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { loading, startLoading, stopLoading, Loader } = useLoader();
   const currentDate = new Date().toISOString().split('T')[0];
 
   const initialFormData = {
@@ -22,16 +24,26 @@ const AddUpdateCouponCode = () => {
   };
 
   const [formData, setFormData] = useState(initialFormData);
+  const [dataFetched, setDataFetched] = useState(false);
 
   useEffect(() => {
-    if (id) {
-      axios.get(`${window.react_app_url + window.coupon_code_url}/${id}`)
+    if (id && !dataFetched) {
+      startLoading();
+      axios
+        .get(`${window.react_app_url + window.coupon_code_url}/${id}`)
         .then((response) => {
-          setFormData(response.data.data);
+          const { title, code, description, discount, maxDiscount, minimumOrderValue, startDate, endDate } = response.data.data;
+          setFormData({ title, code, description, discount, maxDiscount, minimumOrderValue, startDate, endDate });
+          stopLoading();
+          setDataFetched(true);
         })
-        .catch((err) => console.log(err));
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+          stopLoading();
+          navigate('/admin/coupon-code');
+        });
     }
-  }, [id]);
+  }, [id, dataFetched, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -50,9 +62,10 @@ const AddUpdateCouponCode = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    startLoading();
     try {
-      if (!formData.title || !formData.code || !formData.description || !formData.discount || !formData.maxDiscount || !formData.startDate || !formData.endDate || !formData.minimumOrderValue) {
+
+      if (!formData.title.trim() || !formData.code.trim() || !formData.description.trim() || !formData.discount.trim() || !formData.maxDiscount.trim() || !formData.startDate.trim() || !formData.endDate.trim() || !formData.minimumOrderValue.trim()) {
         toast.warning('Please fill in all required fields.', {
           position: 'top-right',
           autoClose: 5000,
@@ -63,22 +76,30 @@ const AddUpdateCouponCode = () => {
           progress: undefined,
           theme: 'dark',
         });
+        stopLoading();
         return;
       }
 
       if (id) {
-        // Update existing Coupon Code
-        const response = await axios.put(`${window.react_app_url + window.coupon_code_url}/${id}`, formData);
-        toast.success(response.data.message, {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'dark',
-        });
+        if (!dataFetched) {
+          navigate('/admin/coupon-code');
+        }
+        if (dataFetched) {
+          const response = await axios.put(
+            `${window.react_app_url + window.coupon_code_url}/${id}`,
+            formData
+          );
+          toast.success(response.data.message, {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'dark',
+          });
+        }
       } else {
         // Create new Coupon Code
         const response = await axios.post(`${window.react_app_url + window.coupon_code_url}`, formData);
@@ -110,6 +131,9 @@ const AddUpdateCouponCode = () => {
         theme: 'dark',
       });
     }
+    finally {
+      stopLoading();
+    }
   };
 
   function formatDate(dateString) {
@@ -123,6 +147,7 @@ const AddUpdateCouponCode = () => {
 
   return (
     <>
+      {loading && <Loader />}
       <div className="p-6 flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between">
         <div className="mr-6">
           <BreadCrumb title="Coupon Code / " desc={id ? 'Update Coupon Code' : 'Add Coupon Code'} link="/admin/coupon-code" />

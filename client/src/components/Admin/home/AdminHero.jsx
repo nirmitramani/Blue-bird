@@ -5,6 +5,7 @@ import Sidebar from '../global/Sidebar';
 import Topbar from '../global/Topbar';
 import Dashboard from './Dashboard';
 import Profile from './Profile';
+import ChangePassword from './ChangePassword';
 
 import Slider from '../modules/sliders/Slider';
 import AddUpdateSlider from '../modules/sliders/AddUpdateSlider';
@@ -81,6 +82,7 @@ const AdminHero = () => {
             <Route path="/admin" element={<Navigate to="/admin/dashboard" />} />
             <Route path="admin/dashboard" element={AuthElement('admin', <Dashboard />)} />
             <Route path="admin/profile" element={AuthElement('admin', <Profile />)} />
+            <Route path="admin/profile/change-password/:id" element={AuthElement('admin', <ChangePassword />)} />
 
             //Users route
             <Route path="admin/users" element={AuthElement('admin', <Users />)} />

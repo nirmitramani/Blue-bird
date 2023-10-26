@@ -7,6 +7,7 @@ const profileUpload = UploadImage('user/');
 
 // Apply the middleware to protect these routes
 router.get("/count", UserController.counts);
+router.put("/change-password/:id", UserController.changePassword);
 router.get("/", UserController.index);
 // router.post("/", ImageUpload.single('productcategoryimg'), UserController.store);
 router.get("/:id", UserController.show);
