@@ -7,7 +7,7 @@ exports.index = async (req, res) => {
 
         res.status(200).json({
             status: true,
-            message: constant.MSG_FOR_GET_FAQS_DATA_SUCCESSFULLY,
+            message: constant.MSG_FOR_GET_CMS_PAGES_DATA_SUCCESSFULLY,
             data: getCmsPages,
         });
     } catch (error) {
@@ -21,7 +21,7 @@ exports.show = async (req, res) => {
         const getCmsPages = await CmsPage.findById(req.params.id);
         res.status(201).json({
             status: true,
-            message: constant.MSG_FOR_GET_FAQS_DATA_SUCCESSFULLY,
+            message: constant.MSG_FOR_GET_CMS_PAGES_DATA_SUCCESSFULLY,
             data: getCmsPages,
         });
     } catch (error) {
@@ -36,7 +36,7 @@ exports.update = async (req, res) => {
         const updatedCms = await CmsPage.findById(id);
 
         if (!updatedCms) {
-            return res.json({ status: false, message: constant.MSG_FOR_FAQS_NOT_FOUND });
+            return res.json({ status: false, message: constant.MSG_FOR_CMS_PAGES_NOT_FOUND });
         }
 
         updatedCms.title = req.body.title;
@@ -45,7 +45,7 @@ exports.update = async (req, res) => {
 
         res.status(200).json({
             status: true,
-            message: constant.MSG_FOR_FAQS_UPDATE_SUCCEESFULL,
+            message: constant.MSG_FOR_CMS_PAGES_UPDATE_SUCCEESFULL,
             data: updatedCms,
         });
     } catch (error) {

@@ -85,6 +85,7 @@ const AccountDetails = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         startLoading()
+        
         const formDataToSend = new FormData();
         formDataToSend.append('userName', formData.userName);
         formDataToSend.append('email', formData.email);
