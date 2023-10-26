@@ -249,21 +249,6 @@ const AddUpdateProduct = () => {
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             placeholder="Enter Price"
                         />
-<<<<<<< HEAD
-=======
-                        <label htmlFor="stockquantity" className="mt-4 block text-sm font-medium text-gray-900 ">
-                            Stock Quantity
-                        </label>
-                        <input
-                            type="number"
-                            id="stockquantity"
-                            name="stockquantity"
-                            value={formData.stockquantity}
-                            onChange={handleInputChange}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                            placeholder="Enter Stock Quantity"
-                        />
->>>>>>> 5506619080a862fb0dfe92fe5b21c005ebd45429
                         <label htmlFor="category" className="mt-4 block text-sm font-medium text-gray-900">
                             Product Category
                         </label>
@@ -309,7 +294,7 @@ const AddUpdateProduct = () => {
                             )}
                         </select>
                     </div>
-                    
+
                     <div>
                         <label htmlFor="productimg" className="mt-4 block text-sm font-medium text-gray-900 ">
                             Product Image
