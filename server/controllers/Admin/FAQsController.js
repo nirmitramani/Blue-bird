@@ -18,11 +18,21 @@ exports.index = async (req, res) => {
 
 exports.store = async (req, res) => {
     try {
+        const question = req.body.question;
+
+        const existingFAQ = await FAQs.findOne({ question });
+
+        if (existingFAQ) {
+            return res.status(400).json({ status: false, message: 'A FAQ with the same question already exists' });
+        }
+
         const FaqsData = {
-            question: req.body.question,
+            question,
             answer: req.body.answer,
         };
+        
         const createdFAQs = await FAQs.create(FaqsData);
+        
         res.status(201).json({
             status: true,
             message: constant.MSG_FOR_FAQS_ADD_SUCCEESFULL,
@@ -56,8 +66,20 @@ exports.update = async (req, res) => {
             return res.json({ status: false, message: constant.MSG_FOR_FAQS_NOT_FOUND });
         }
 
-        updatedFaqs.question = req.body.question;
-        updatedFaqs.answer = req.body.answer;
+        const { question, answer } = req.body;
+
+        if (!question || !answer) {
+            return res.status(400).json({ status: false, message: 'All fields are required' });
+        }
+
+        const existingFAQ = await FAQs.findOne({ question, _id: { $ne: id } });
+
+        if (existingFAQ) {
+            return res.status(400).json({ status: false, message: 'A FAQ with the same question already exists' });
+        }
+
+        updatedFaqs.question = question;
+        updatedFaqs.answer = answer;
         const savedFaqs = await updatedFaqs.save();
 
         res.status(200).json({
@@ -69,6 +91,8 @@ exports.update = async (req, res) => {
         res.json({ status: false, message: error.message });
     }
 };
+
+
 
 exports.delete = async (req, res) => {
     const { id } = req.params;
@@ -84,8 +108,6 @@ exports.delete = async (req, res) => {
     }
 };
 
-
-//update the status using id
 exports.statusChnage = (req, res) => {
     const faqId = req.params.id;
     const { status } = req.body;

@@ -19,11 +19,28 @@ exports.index = async (req, res) => {
 
 exports.store = async (req, res) => {
     try {
+        const { name, description } = req.body;
+
+        if (!name || !description) {
+            return res.json({ status: false, message: 'All fields are required' });
+        }
+
+        const existingEvent = await Event.findOne({ name });
+
+        if (existingEvent) {
+            return res.json({ status: false, message: 'An event with the same name already exists' });
+        }
+
+        if(!req.file.filename){
+            return res.json({ status: false, message: 'File is required' });
+        }
+
         const eventData = {
             eventimg: req.file.filename,
-            name: req.body.name,
-            description: req.body.description,
+            name: name,
+            description: description,
         };
+
         const createdEvent = await Event.create(eventData);
         res.status(201).json({
             status: true,
@@ -35,6 +52,8 @@ exports.store = async (req, res) => {
         res.json({ status: false, message: error.message });
     }
 };
+
+
 
 exports.show = async (req, res) => {
     try {
@@ -58,25 +77,39 @@ exports.update = async (req, res) => {
             return res.json({ status: false, message: constant.MSG_FOR_EVENT_NOT_FOUND });
         }
 
+        const { name, description } = req.body;
+
+        if (!name || !description) {
+            return res.status(400).json({ status: false, message: 'All fields are required' });
+        }
+
+        const existingEvent = await Event.findOne({ name, _id: { $ne: id } });
+
+        if (existingEvent) {
+            return res.status(400).json({ status: false, message: 'An event with the same name already exists' });
+        }
+
         if (req.file) {
             const imagePath = `public/images/events/${updatedEvent.eventimg}`;
             deleteImage(imagePath);
         }
 
         updatedEvent.eventimg = req.file ? req.file.filename : updatedEvent.eventimg;
-        updatedEvent.name = req.body.name;
-        updatedEvent.description = req.body.description;
+        updatedEvent.name = name;
+        updatedEvent.description = description;
         const savedEvent = await updatedEvent.save();
 
         res.status(200).json({
             status: true,
             message: constant.MSG_FOR_EVENT_UPDATE_SUCCEESFULL,
-            data: updatedEvent,
+            data: savedEvent,
         });
     } catch (error) {
         res.json({ status: false, message: error.message });
     }
 };
+
+
 
 exports.delete = async (req, res) => {
     const { id } = req.params;

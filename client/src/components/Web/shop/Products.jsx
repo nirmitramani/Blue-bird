@@ -13,6 +13,34 @@ const Products = () => {
     const [products, setProducts] = useState([]);
     const [favorites, setFavorites] = useState([]);
     const [cartItems, setCartItems] = useState([]);
+    const [reviews, setReviews] = useState([]);
+
+    const calculateAverageRating = (product) => {
+        const productReviews = reviews.filter(review => review.productId === product._id);
+
+        const ratingCount = productReviews.length;
+
+        if (ratingCount === 0) {
+            return { averageRating: 0, ratingCount: 0 };
+        }
+
+        const totalRating = productReviews.reduce((total, review) => total + review.rating, 0);
+        const averageRating = totalRating / ratingCount;
+
+        const fullStars = Math.floor(averageRating);
+
+        const hasHalfStar = averageRating - fullStars >= 0.1;
+
+        return { averageRating, ratingCount, fullStars, hasHalfStar };
+    };
+
+    useEffect(() => {
+        axios.get(`${window.react_app_url + window.review_url}`)
+            .then(result => {
+                setReviews(result.data.data);
+            })
+            .catch(err => console.log(err))
+    }, []);
 
     
     useEffect(() => {
@@ -28,7 +56,6 @@ const Products = () => {
             setCartItems(JSON.parse(storedCartItems));
         }
     }, []);
-
 
     const toggleFavorite = (productId) => {
         const isFavorite = favorites.includes(productId);
@@ -180,11 +207,22 @@ const Products = () => {
                                                 </button>
                                             </div>
                                             <div className="mt-8 flex justify-start gap-2.5">
-                                                <AiFillStar className="text-xl" />
-                                                <AiFillStar className="text-xl" />
-                                                <AiFillStar className="text-xl" />
-                                                <AiOutlineStar className="text-xl" />
-                                                <FaStarHalfAlt className="text-xl" />
+                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                    <span key={star}>
+                                                        {star <= calculateAverageRating(product).fullStars ? (
+                                                            <AiFillStar className="text-xl text-yellow-500" />
+                                                        ) : (
+                                                            star === calculateAverageRating(product).fullStars + 1 && calculateAverageRating(product).hasHalfStar ? (
+                                                                <FaStarHalfAlt className="text-xl text-yellow-500" />
+                                                            ) : (
+                                                                <AiOutlineStar className="text-xl text-yellow-500" />
+                                                            )
+                                                        )}
+                                                    </span>
+                                                ))}
+                                                <span className="text-gray-400 text-xs ml-2">
+                                                    ({calculateAverageRating(product).ratingCount} ratings)
+                                                </span>
                                             </div>
                                             <h3 className="mt-2 text-sm leading-normal font-semibold font-palanquin">
                                                 {product.name}

@@ -14,7 +14,7 @@ const AddUpdateEvent = () => {
   const initialFormData = {
     name: '',
     description: '',
-    eventimg: null,
+    eventimg: '',
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -44,17 +44,18 @@ const AddUpdateEvent = () => {
     if (name === 'eventimg') {
       const file = files[0];
       if (file) {
-        if (file.type === 'image/jpeg' || file.type === 'image/png') {
+        if (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp') {
           setFormData({
             ...formData,
             [name]: file,
           });
         } else {
           e.target.value = null;
-          toast.error('Please select a jpg or png image.');
+          toast.error('Please select a jpg,webp and png image.');
         }
       }
-    } else {
+    }
+    else {
       setFormData({
         ...formData,
         [name]: value,
@@ -65,26 +66,55 @@ const AddUpdateEvent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     startLoading();
-    
+
+    if (!formData.name.trim() || !formData.description.trim() || (!id && !formData.eventimg)) {
+      toast.warning('Please fill in all required fields.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+
+    if (!/[a-zA-Z]/.test(formData.name)) {
+      toast.warning('Name must contain at least one alphabet character.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+
+    if (!/[a-zA-Z]/.test(formData.description)) {
+      toast.warning('Description must contain at least one alphabet character.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
     const formDataToSend = new FormData();
     formDataToSend.append('name', formData.name.trim());
     formDataToSend.append('description', formData.description.trim());
     formDataToSend.append('eventimg', formData.eventimg);
-
-    // if (!formData.name.trim() || !formData.description.trim() || !formData.eventimg) {
-    //   toast.warning('Please fill in all required fields.', {
-    //     position: 'top-right',
-    //     autoClose: 5000,
-    //     hideProgressBar: true,
-    //     closeOnClick: true,
-    //     pauseOnHover: true,
-    //     draggable: true,
-    //     progress: undefined,
-    //     theme: 'dark',
-    //   });
-    //   stopLoading();
-    //   return;
-    // }
 
     try {
       if (id) {
@@ -111,30 +141,6 @@ const AddUpdateEvent = () => {
           });
         }
       } else {
-        const requiredFields = ['name', 'description', 'eventimg'];
-        let hasMissingFields = false;
-
-        for (const fieldName of requiredFields) {
-          if (!formData[fieldName]) {
-            hasMissingFields = true;
-            break;
-          }
-        }
-
-        if (hasMissingFields) {
-          toast.warning('Please fill in all required fields.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: 'dark',
-          });
-          return;
-        }
-
         const response = await axios.post(`${window.react_app_url + window.event_url}`, formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -222,17 +228,24 @@ const AddUpdateEvent = () => {
               name="eventimg"
               onChange={handleInputChange}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            // required={id ? false : true}
             />
           </div>
         </div>
         <div className="ml-20 mt-12">
           <Button label={id ? 'Update' : 'Submit'} type="submit" width="32" bgColor="blue" />
-          <Button label="Reset" type="reset"
+          <Button
+            label={id ? 'Cancel' : 'Reset'}
+            type='reset'
             onClick={() => {
-              setFormData(initialFormData)
+              if (id) {
+                navigate('/admin/events');
+              } else {
+                setFormData(initialFormData);
+              }
             }}
-            width="32" bgColor="red" />
+            width="32"
+            bgColor={id ? "gray" : "red"}
+          />
         </div>
       </form>
     </>

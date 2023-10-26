@@ -49,27 +49,58 @@ const UpdateCmsPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     startLoading();
+
+    if (!formData.title.trim() || !formData.description.trim()) {
+      toast.warning('Please fill in all required fields.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+
+    if (!/[a-zA-Z]/.test(formData.title)) {
+      toast.warning('Title must contain at least one alphabet character.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+
+    if (!/[a-zA-Z]/.test(formData.description)) {
+      toast.warning('Description must contain at least one alphabet character.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+
+    const formDataToSend = {
+      title: formData.title,
+      description: formData.description,
+    };
+
     try {
-      if (!formData.title.trim() || !formData.description.trim()) {
-        toast.warning('Please fill in all required fields.', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'dark',
-        });
-        stopLoading();
-        return;
-      }
-
-      const formDataToSend = {
-        title: formData.title,
-        description: formData.description,
-      };
-
       if (id) {
         if (!dataFetched) {
           navigate('/admin/cms-pages');
@@ -151,7 +182,19 @@ const UpdateCmsPage = () => {
         </div>
         <div className="ml-20 mt-12">
           <Button label={id ? 'Update' : 'Submit'} type="submit" width="32" bgColor="blue" />
-          <Button label="Reset" type="reset" width="32" bgColor="red" />
+          <Button
+            label={id ? 'Cancel' : 'Reset'}
+            type='reset'
+            onClick={() => {
+              if (id) {
+                navigate('/admin/cms-pages');
+              } else {
+                setFormData(initialFormData);
+              }
+            }}
+            width="32"
+            bgColor={id ? "gray" : "red"}
+          />
         </div>
       </form>
     </>

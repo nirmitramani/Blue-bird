@@ -18,6 +18,21 @@ exports.index = async (req, res) => {
 exports.store = async (req, res) => {
     try {
         const { title, code, description, discount, maxDiscount, minimumOrderValue, startDate, endDate } = req.body;
+
+        if (!title || !code || !description || !discount || !maxDiscount || !minimumOrderValue || !startDate || !endDate) {
+            return res.status(400).json({ status: false, message: 'All fields are required' });
+        }
+
+        const existingTitleCoupon = await CouponCode.findOne({ title });
+        if (existingTitleCoupon) {
+            return res.status(400).json({ status: false, message: 'A coupon code with the same title already exists' });
+        }
+
+        const existingCodeCoupon = await CouponCode.findOne({ code });
+        if (existingCodeCoupon) {
+            return res.status(400).json({ status: false, message: 'A coupon code with the same code already exists' });
+        }
+
         const CouponCodeData = {
             title: title,
             code: code,
@@ -39,6 +54,7 @@ exports.store = async (req, res) => {
     }
 };
 
+
 exports.show = async (req, res) => {
     try {
         const getCouponCode = await CouponCode.findById(req.params.id);
@@ -57,10 +73,24 @@ exports.update = async (req, res) => {
     try {
         const { title, code, description, discount, maxDiscount, minimumOrderValue, startDate, endDate } = req.body;
 
+        if (!title || !code || !description || !discount || !maxDiscount || !minimumOrderValue || !startDate || !endDate) {
+            return res.status(400).json({ status: false, message: 'All fields are required' });
+        }
+        
         const updatedCouponCode = await CouponCode.findById(id);
 
         if (!updatedCouponCode) {
             return res.json({ status: false, message: constant.MSG_FOR_COUPON_CODE_NOT_FOUND });
+        }
+
+        const existingTitleCoupon = await CouponCode.findOne({ title, _id: { $ne: id } });
+        if (existingTitleCoupon) {
+            return res.status(400).json({ status: false, message: 'A coupon code with the same title already exists' });
+        }
+
+        const existingCodeCoupon = await CouponCode.findOne({ code, _id: { $ne: id } });
+        if (existingCodeCoupon) {
+            return res.status(400).json({ status: false, message: 'A coupon code with the same code already exists' });
         }
 
         updatedCouponCode.title = title;
@@ -82,6 +112,7 @@ exports.update = async (req, res) => {
         res.json({ status: false, message: error.message });
     }
 };
+
 
 exports.delete = async (req, res) => {
     const { id } = req.params;

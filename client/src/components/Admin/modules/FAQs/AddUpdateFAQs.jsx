@@ -49,27 +49,57 @@ const AddUpdateFAQs = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     startLoading();
+
+    if (!formData.question.trim() || !formData.answer.trim()) {
+      toast.warning('Please fill in all required fields.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+
+    if (!/[a-zA-Z]/.test(formData.question)) {
+      toast.warning('Question must contain at least one alphabet character.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+
+    if (!/[a-zA-Z]/.test(formData.answer)) {
+      toast.warning('Answer must contain at least one alphabet character.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+
+    const formDataToSend = {
+      question: formData.question,
+      answer: formData.answer,
+    };
     try {
-
-      if (!formData.question.trim() || !formData.answer.trim()) {
-        toast.warning('Please fill in all required fields.', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'dark',
-        });
-        return;
-      }
-
-      const formDataToSend = {
-        question: formData.question,
-        answer: formData.answer,
-      };
-
       if (id) {
         if (!dataFetched) {
           navigate('/admin/faqs');
@@ -122,18 +152,6 @@ const AddUpdateFAQs = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (id && !isValidId(id)) {
-  //     navigate('/admin/faqs');
-  //   }
-  // }, [id, navigate]);
-
-  // // Define a function to check if the ID is valid (e.g., numeric)
-  // const isValidId = (id) => {
-  //   const numericId = parseInt(id);
-  //   return !isNaN(numericId) && isFinite(numericId);
-  // };
-
   return (
     <>
       {loading && <Loader />}
@@ -178,11 +196,19 @@ const AddUpdateFAQs = () => {
         </div>
         <div className="ml-20 mt-12">
           <Button label={id ? 'Update' : 'Submit'} type="submit" width="32" bgColor="blue" />
-          <Button label="Reset" type="reset"
+          <Button
+            label={id ? 'Cancel' : 'Reset'}
+            type='reset'
             onClick={() => {
-              setFormData(initialFormData)
+              if (id) {
+                navigate('/admin/faqs');
+              } else {
+                setFormData(initialFormData);
+              }
             }}
-            width="32" bgColor="red" />
+            width="32"
+            bgColor={id ? "gray" : "red"}
+          />
         </div>
       </form>
     </>

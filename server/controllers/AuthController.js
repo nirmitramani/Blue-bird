@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const User = require('../schema/Client/UserSchema');
 const secretKey = process.env.SECRET_TOKEN_KEY;
 
-const creatToken = (id, maxAge) => {
+const createToken = (id, maxAge) => {
     return jwt.sign({ id }, process.env.SECRET_TOKEN_KEY, {
         expiresIn: maxAge
     })
@@ -12,36 +12,38 @@ const signUp = async (req, res) => {
     try {
         const { email, userName, phone, password } = req.body;
 
-        // Check if the user with the same email or userName already exists
-        const existingUser = await User.findOne({ $or: [{ email }, { userName }] });
-
-        if (existingUser) {
-            return res.status(400).json({ status: 'error', message: 'User with the same email or userName already exists' });
+        const existingEmailUser = await User.findOne({ email });
+        if (existingEmailUser) {
+            return res.status(400).json({ status: false, message: 'User with the same email already exists' });
         }
 
-        // Hash the password before saving it
+        // Check if the user with the same userName already exists
+        const existingUserNameUser = await User.findOne({ userName });
+        if (existingUserNameUser) {
+            return res.status(400).json({ status: false, message: 'User with the same userName already exists' });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create a new user document
         const newUser = new User({ email, userName, phone, password: hashedPassword });
 
-        // Save the user to the database
         await newUser.save();
 
         const maxAge = 50 * 365 * 24 * 60 * 60;
 
-        const token = creatToken(newUser._id, maxAge)
+        const token = createToken(newUser._id, maxAge);
         res.cookie("user", token, {
-            withCrdentials: true,
+            withCredentials: true,
             httpOnly: false,
             maxAge: maxAge * 1000,
         });
         res.status(200).json({ status: true, user: newUser._id, created: true });
     } catch (error) {
         console.error('Registration error:', error);
-        res.status(500).json({ status: 'error', message: 'Registration failed'.error });
+        res.status(500).json({ status: false, message: 'Registration failed', error: error.message });
     }
 };
+
 
 const signIn = async (req, res) => {
     const { role } = req.params;
@@ -59,7 +61,7 @@ const signIn = async (req, res) => {
 
     if(role == user.role){
         const maxAge = 50 * 365 * 24 * 60 * 60;
-        const token = creatToken(user._id, maxAge)
+        const token = createToken(user._id, maxAge)
         res.cookie(user.role, token, {
             withCrdentials: true,
             httpOnly: false,

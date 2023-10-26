@@ -60,11 +60,7 @@ const AddUpdateProduct = () => {
         if (name === 'productimg') {
             const file = files[0];
             if (file) {
-                if (
-                    file.type === 'image/jpeg' ||
-                    file.type === 'image/png' ||
-                    file.type === 'image/webp'
-                ) {
+                if (file.type === 'image/jpeg' || file.type === 'image/png'|| file.type === 'image/webp') {
                     setFormData({
                         ...formData,
                         [name]: file,
@@ -90,18 +86,79 @@ const AddUpdateProduct = () => {
                     e.target.value = null;
                     toast.error('Please select a jpg / png / jpeg / webp image.');
                 }
-            } else {
-                setFormData({
-                    ...formData,
-                    [name]: value,
-                });
             }
+        } else {
+            setFormData({
+                ...formData,
+                [name]: value,
+            });
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         startLoading();
+
+        if (!formData.name.trim() || !formData.description.trim() || !formData.price.toString().trim() || !formData.categoryid.toString().trim() || (!id && !formData.productimg) || (!id && !formData.productthumbimg)) {
+            toast.warning('Please fill in all required fields.', {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
+            stopLoading();
+            return;
+        }
+
+        if (!/[a-zA-Z]/.test(formData.name)) {
+            toast.warning('Name must contain at least one alphabet character.', {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
+            stopLoading();
+            return;
+        }
+
+        if (!/[a-zA-Z]/.test(formData.description)) {
+            toast.warning('Description must contain at least one alphabet character.', {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
+            stopLoading();
+            return;
+        }
+
+        if (parseFloat(formData.price) <= 0) {
+            toast.error(`Price must be greater than 0.`, {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
+            stopLoading();
+            return;
+        }
+
         const formDataToSend = new FormData();
 
         for (const key in formData) {
@@ -160,7 +217,7 @@ const AddUpdateProduct = () => {
                 }
 
                 if (hasMissingFields) {
-                    toast.warning('Please fill in all required fields', {
+                    toast.warning('Please fill in all required fields.', {
                         position: 'top-right',
                         autoClose: 5000,
                         hideProgressBar: true,
@@ -173,15 +230,11 @@ const AddUpdateProduct = () => {
                     return;
                 }
 
-                const response = await axios.post(
-                    `${window.react_app_url + window.product_url}`,
-                    formDataToSend,
-                    {
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                        },
-                    }
-                );
+                const response = await axios.post(`${window.react_app_url + window.product_url}`, formDataToSend, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
 
                 toast.success(response.data.message, {
                     position: 'top-right',
@@ -253,7 +306,7 @@ const AddUpdateProduct = () => {
                             Price
                         </label>
                         <input
-                            type="number"
+                            type="text"
                             id="price"
                             name="price"
                             value={formData.price}
@@ -276,6 +329,7 @@ const AddUpdateProduct = () => {
                             isClearable
                         />
                     </div>
+                    
                     <div>
                         <label htmlFor="productimg" className="mt-4 block text-sm font-medium text-gray-900 ">
                             Product Image
@@ -304,15 +358,11 @@ const AddUpdateProduct = () => {
                 </div>
                 <div className="ml-20 mt-12">
                     <Button label="Submit" type="submit" width="32" bgColor="blue" />
-                    <Button
-                        label="Reset"
-                        type="reset"
+                    <Button label="Reset" type="reset"
                         onClick={() => {
-                            setFormData(initialFormData);
+                            setFormData(initialFormData)
                         }}
-                        width="32"
-                        bgColor="red"
-                    />
+                        width="32" bgColor="red" />
                 </div>
             </form>
         </>
