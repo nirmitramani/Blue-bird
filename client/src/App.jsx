@@ -64,7 +64,7 @@ const App = () => {
         <Route path="cart" element={<CartItems />} />
         <Route path="favorite" element={<FavoriteProducts />} />
         <Route path="product-detail" element={<ProductDetail />} />
-        <Route path="profile/dashboard" element={<Auth element={<Dashboard />} role='user' />} />
+        <Route path="profile/dashboard/:id" element={<Auth element={<Dashboard />} role='user' />} />
         <Route path="profile/orders/:id" element={<Auth element={<Orders />} role='user' />} />
         <Route path="profile/change-password/:id" element={<Auth element={<ChangePassword />} role='user' />} />
         <Route path="profile/account-details/:id" element={<Auth element={<AccountDetails />} role='user' />} />

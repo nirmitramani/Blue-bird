@@ -9,12 +9,14 @@ const ChangePassword = () => {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
+        oldPassword: '',
         password: '',
         confirmPassword: '',
     });
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [showOldPassword, setShowOldPassword] = useState(false);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -31,9 +33,37 @@ const ChangePassword = () => {
     const toggleConfirmPasswordVisibility = () => {
         setShowConfirmPassword(!showConfirmPassword);
     };
+    const toggleOldPasswordVisibility = () => {
+        setShowOldPassword(!showOldPassword);
+    };
+
+    const resetForm = () => {
+        setFormData({
+            oldPassword: '',
+            password: '',
+            confirmPassword: '',
+        });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (
+            !formData.oldPassword.trim() ||
+            !formData.password.trim() ||
+            !formData.confirmPassword.trim()
+        ) {
+            toast.error('All fields are required.', {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
+            return;
+        }
 
         if (formData.password !== formData.confirmPassword) {
             toast.error("Passwords don't match", {
@@ -48,14 +78,41 @@ const ChangePassword = () => {
             });
             return;
         }
+        try {
+            const response = await axios.put
+                (
+                    `${window.react_app_url + window.user_url + '/change-password'}/${id}`, {
+                    password: formData.password,
+                    oldPassword: formData.oldPassword
+                });
 
-        const res = await axios
-            .put(`${window.react_app_url + window.user_url + '/change-password'}/${id}`, {
-                password: formData.password,
-            });
-
-        if (res.data.status) {
-            toast.success(res.data.message, {
+            if (response.data.status === false) {
+                toast.error(response.data.message, {
+                    position: 'top-right',
+                    autoClose: 5000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: 'dark',
+                });
+            }
+            else {
+                toast.success(response.data.message, {
+                    position: 'top-right',
+                    autoClose: 5000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: 'dark',
+                });
+                navigate('/profile/dashboard');
+            }
+        } catch (error) {
+            toast.error('Error updating password', {
                 position: 'top-right',
                 autoClose: 5000,
                 hideProgressBar: true,
@@ -65,7 +122,6 @@ const ChangePassword = () => {
                 progress: undefined,
                 theme: 'dark',
             });
-            // navigate('/profile/dashboard');
         }
     };
 
@@ -83,7 +139,18 @@ const ChangePassword = () => {
                                 <div className="flex flex-col space-y-3">
                                     <div className="mb-4">
                                         <div className="block">
-                                            <label htmlFor="password" className="block text-gray-600 font-semibold text-sm leading-none mb-3 cursor-pointer">Old Password *</label>
+                                            <label htmlFor="oldPassword" className="block text-gray-600 font-semibold text-sm leading-none mb-3 cursor-pointer">Old Password *</label>
+                                            <input
+                                                name="oldPassword"
+                                                type={showPassword ? 'text' : 'password'}
+                                                value={formData.oldPassword}
+                                                onChange={handleInputChange}
+                                                className="py-2 px-4 md:px-5 w-[800px] appearance-none border text-input text-xs lg:text-sm font-body placeholder-body min-h-12 transition duration-200 ease-in-out bg-white border-gray-300 focus:outline-none focus:border-heading h-11 md:h-12 rounded-md" />
+                                        </div>
+                                    </div>
+                                    <div className="mb-4">
+                                        <div className="block">
+                                            <label htmlFor="password" className="block text-gray-600 font-semibold text-sm leading-none mb-3 cursor-pointer">Password *</label>
                                             <input
                                                 name="password"
                                                 type={showPassword ? 'text' : 'password'}
@@ -106,7 +173,7 @@ const ChangePassword = () => {
                                     <div className="relative">
                                         <button
                                             type='submit'
-                                            className='bg-black text-white mt-3 px-6 py-2 w-56'
+                                            className='bg-black text-white mt-3 px-6 py-2 w-56 mb-4'
                                         >
                                             CHANGE PASSWORD
                                         </button>
