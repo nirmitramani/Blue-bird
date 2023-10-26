@@ -17,22 +17,26 @@ const AddUpdateSlider = () => {
     };
 
     const [formData, setFormData] = useState(initialFormData);
+    const [dataFetched, setDataFetched] = useState(false);
 
     useEffect(() => {
-        if (id) {
+        if (id && !dataFetched) {
             startLoading();
-            axios.get(`${window.react_app_url + window.slider_url}/${id}`)
+            axios
+                .get(`${window.react_app_url + window.slider_url}/${id}`)
                 .then((response) => {
                     const { title } = response.data.data;
                     setFormData({ title });
                     stopLoading();
+                    setDataFetched(true);
                 })
-                .catch(error => {
+                .catch((error) => {
                     console.error('Error fetching data:', error);
                     stopLoading();
+                    navigate('/admin/sliders');
                 });
         }
-    }, [id]);
+    }, [id, dataFetched, navigate]);
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
@@ -66,21 +70,26 @@ const AddUpdateSlider = () => {
 
         try {
             if (id) {
-                const response = await axios.put(`${window.react_app_url + window.slider_url}/${id}`, formDataToSend, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-                toast.success(response.data.message, {
-                    position: 'top-right',
-                    autoClose: 5000,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: 'dark',
-                });
+                if (!dataFetched) {
+                    navigate('/admin/sliders');
+                }
+                if (dataFetched) {
+                    const response = await axios.put(`${window.react_app_url + window.slider_url}/${id}`, formDataToSend, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    });
+                    toast.success(response.data.message, {
+                        position: 'top-right',
+                        autoClose: 5000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'dark',
+                    });
+                }
             } else {
                 const requiredFields = ['title', 'sliderimg'];
                 let hasMissingFields = false;

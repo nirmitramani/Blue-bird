@@ -18,24 +18,26 @@ const AddUpdateCategory = () => {
     };
 
     const [formData, setFormData] = useState(initialFormData);
-
+    const [dataFetched, setDataFetched] = useState(false);
 
     useEffect(() => {
-        if (id) {
+        if (id && !dataFetched) {
             startLoading();
-
-            axios.get(`${window.react_app_url + window.product_category_url}/${id}`)
+            axios
+                .get(`${window.react_app_url + window.product_category_url}/${id}`)
                 .then((response) => {
                     const { name, gender } = response.data.data;
                     setFormData({ name, gender });
                     stopLoading();
+                    setDataFetched(true);
                 })
-                .catch(error => {
+                .catch((error) => {
                     console.error('Error fetching data:', error);
                     stopLoading();
+                    navigate('/admin/product-categories');
                 });
         }
-    }, [id]);
+    }, [id, dataFetched, navigate]);
 
 
     const handleInputChange = (e) => {
@@ -72,22 +74,26 @@ const AddUpdateCategory = () => {
 
         try {
             if (id) {
-                // Update existing product categoryimg
-                const response = await axios.put(`${window.react_app_url + window.product_category_url}/${id}`, formDataToSend, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-                toast.success(response.data.message, {
-                    position: 'top-right',
-                    autoClose: 5000,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: 'dark',
-                });
+                if (!dataFetched) {
+                    navigate('/admin/product-categories');
+                }
+                if (dataFetched) {
+                    const response = await axios.put(`${window.react_app_url + window.product_category_url}/${id}`, formDataToSend, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    });
+                    toast.success(response.data.message, {
+                        position: 'top-right',
+                        autoClose: 5000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'dark',
+                    });
+                }
             } else {
                 const requiredFields = ['name', 'productcategoryimg'];
                 let hasMissingFields = false;

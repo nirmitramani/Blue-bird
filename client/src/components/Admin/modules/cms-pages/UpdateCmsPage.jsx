@@ -50,7 +50,7 @@ const UpdateCmsPage = () => {
     e.preventDefault();
     startLoading();
     try {
-      if (!formData.title || !formData.description) {
+      if (!formData.title.trim() || !formData.description.trim()) {
         toast.warning('Please fill in all required fields.', {
           position: 'top-right',
           autoClose: 5000,
@@ -61,6 +61,7 @@ const UpdateCmsPage = () => {
           progress: undefined,
           theme: 'dark',
         });
+        stopLoading();
         return;
       }
 
@@ -68,7 +69,7 @@ const UpdateCmsPage = () => {
         title: formData.title,
         description: formData.description,
       };
-      
+
       if (id) {
         if (!dataFetched) {
           navigate('/admin/cms-pages');
