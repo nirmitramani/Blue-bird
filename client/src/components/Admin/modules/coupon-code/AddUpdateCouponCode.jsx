@@ -47,39 +47,131 @@ const AddUpdateCouponCode = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    if (name == 'code') {
+
+    if (name === 'discount' || name === 'maxDiscount' || name === 'minimumOrderValue') {
       setFormData({
         ...formData,
-        [name]: value.toUpperCase(),
+        [name]: value.replace(/\D/g, ''),
       });
     }
-
+    else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+    if (name === 'code') {
+      setFormData({
+        ...formData,
+        [name]: value.replace(/[^A-Za-z0-9\s]/g, '').toUpperCase(),
+      });
+    }
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     startLoading();
+
+    if (
+      !formData.title.trim() ||
+      !formData.code.trim() ||
+      !formData.description.trim() ||
+      !formData.discount.toString().trim() ||
+      !formData.maxDiscount.toString().trim() ||
+      !formData.startDate.toString().trim() ||
+      !formData.endDate.toString().trim() ||
+      !formData.minimumOrderValue.toString().trim()
+    ) {
+      toast.warning('Please fill in all required fields.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+
+    if (!/[a-zA-Z]/.test(formData.title)) {
+      toast.warning('Title must contain at least one alphabet character.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+
+    if (!/[a-zA-Z]/.test(formData.description)) {
+      toast.warning('Description must contain at least one alphabet character.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+
+    if (parseFloat(formData.discount) <= 0) {
+      toast.error(`Discount must be greater than 0.`, {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+    if (parseFloat(formData.maxDiscount) <= 0) {
+      toast.error(`Max Discount must be greater than 0.`, {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+    
+    if (parseFloat(formData.minimumOrderValue) <= 0) {
+      toast.error(`Minimum Order Value must be greater than 0.`, {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+
     try {
-
-      if (!formData.title.trim() || !formData.code.trim() || !formData.description.trim() || !formData.discount.trim() || !formData.maxDiscount.trim() || !formData.startDate.trim() || !formData.endDate.trim() || !formData.minimumOrderValue.trim()) {
-        toast.warning('Please fill in all required fields.', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'dark',
-        });
-        stopLoading();
-        return;
-      }
-
       if (id) {
         if (!dataFetched) {
           navigate('/admin/coupon-code');
@@ -101,7 +193,6 @@ const AddUpdateCouponCode = () => {
           });
         }
       } else {
-        // Create new Coupon Code
         const response = await axios.post(`${window.react_app_url + window.coupon_code_url}`, formData);
         toast.success(response.data.message, {
           position: 'top-right',
@@ -139,7 +230,7 @@ const AddUpdateCouponCode = () => {
   function formatDate(dateString) {
     const date = new Date(dateString);
     const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based, so add 1
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');
 
     return `${year}-${month}-${day}`;
@@ -202,7 +293,7 @@ const AddUpdateCouponCode = () => {
               Discount
             </label>
             <input
-              type='number'
+              type='text'
               id="discount"
               name="discount"
               value={formData.discount}
@@ -216,7 +307,7 @@ const AddUpdateCouponCode = () => {
               Max Discount
             </label>
             <input
-              type='number'
+              type='text'
               id="maxDiscount"
               name="maxDiscount"
               value={formData.maxDiscount}
@@ -230,7 +321,7 @@ const AddUpdateCouponCode = () => {
               Minimum Order Value
             </label>
             <input
-              type='number'
+              type='text'
               id="minimumOrderValue"
               name="minimumOrderValue"
               value={formData.minimumOrderValue}
@@ -272,11 +363,19 @@ const AddUpdateCouponCode = () => {
         </div>
         <div className="ml-20 mt-12">
           <Button label={id ? 'Update' : 'Submit'} type="submit" width="32" bgColor="blue" />
-          <Button label="Reset" type="reset"
+          <Button
+            label={id ? 'Cancel' : 'Reset'}
+            type='reset'
             onClick={() => {
-              setFormData(initialFormData)
+              if (id) {
+                navigate('/admin/coupon-code');
+              } else {
+                setFormData(initialFormData);
+              }
             }}
-            width="32" bgColor="red" />
+            width="32"
+            bgColor={id ? "gray" : "red"}
+          />
         </div>
       </form>
     </>

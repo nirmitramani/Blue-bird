@@ -62,7 +62,7 @@ const AddUpdateProduct = () => {
         if (name === 'productimg') {
             const file = files[0];
             if (file) {
-                if (file.type === 'image/jpeg' || file.type === 'image/png'|| file.type === 'image/webp') {
+                if (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp') {
                     setFormData({
                         ...formData,
                         [name]: file,
@@ -82,10 +82,17 @@ const AddUpdateProduct = () => {
                     });
                 } else {
                     e.target.value = null;
-                    toast.error('Please select a jpg / png / jpeg / webp image.');
+                    toast.error('Please select a jpg,png or webp image.');
                 }
             }
-        } else {
+        }
+        else if (name === 'price') {
+            setFormData({
+                ...formData,
+                [name]: value.replace(/\D/g, ''),
+            });
+        }
+        else {
             setFormData({
                 ...formData,
                 [name]: value,
@@ -96,6 +103,67 @@ const AddUpdateProduct = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         startLoading();
+
+        if (!formData.name.trim() || !formData.description.trim() || !formData.price.toString().trim() || !formData.categoryid.toString().trim() || (!id && !formData.productimg) || (!id && !formData.productthumbimg)) {
+            toast.warning('Please fill in all required fields.', {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
+            stopLoading();
+            return;
+        }
+
+        if (!/[a-zA-Z]/.test(formData.name)) {
+            toast.warning('Name must contain at least one alphabet character.', {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
+            stopLoading();
+            return;
+        }
+
+        if (!/[a-zA-Z]/.test(formData.description)) {
+            toast.warning('Description must contain at least one alphabet character.', {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
+            stopLoading();
+            return;
+        }
+
+        if (parseFloat(formData.price) <= 0) {
+            toast.error(`Price must be greater than 0.`, {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
+            stopLoading();
+            return;
+        }
+
         const formDataToSend = new FormData();
 
         for (const key in formData) {
@@ -131,38 +199,6 @@ const AddUpdateProduct = () => {
                     });
                 }
             } else {
-                const requiredFields = [
-                    'name',
-                    'description',
-                    'price',
-                    'categoryid',
-                    'productimg',
-                    'productthumbimg',
-                ];
-
-                let hasMissingFields = false;
-
-                for (const fieldName of requiredFields) {
-                    if (!formData[fieldName]) {
-                        hasMissingFields = true;
-                        break;
-                    }
-                }
-
-                if (hasMissingFields) {
-                    toast.warning('Please fill in all required fields.', {
-                        position: 'top-right',
-                        autoClose: 5000,
-                        hideProgressBar: true,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: 'dark',
-                    });
-                    return;
-                }
-
                 const response = await axios.post(`${window.react_app_url + window.product_url}`, formDataToSend, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
@@ -215,7 +251,6 @@ const AddUpdateProduct = () => {
                         <label htmlFor="name" className="mt-4 block text-sm font-medium text-gray-900">
                             Name
                         </label>
-                        {name}
                         <input
                             type="text"
                             id="name"
@@ -241,7 +276,7 @@ const AddUpdateProduct = () => {
                             Price
                         </label>
                         <input
-                            type="number"
+                            type="text"
                             id="price"
                             name="price"
                             value={formData.price}
@@ -249,21 +284,6 @@ const AddUpdateProduct = () => {
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             placeholder="Enter Price"
                         />
-<<<<<<< HEAD
-=======
-                        <label htmlFor="stockquantity" className="mt-4 block text-sm font-medium text-gray-900 ">
-                            Stock Quantity
-                        </label>
-                        <input
-                            type="number"
-                            id="stockquantity"
-                            name="stockquantity"
-                            value={formData.stockquantity}
-                            onChange={handleInputChange}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                            placeholder="Enter Stock Quantity"
-                        />
->>>>>>> 5506619080a862fb0dfe92fe5b21c005ebd45429
                         <label htmlFor="category" className="mt-4 block text-sm font-medium text-gray-900">
                             Product Category
                         </label>
@@ -309,7 +329,7 @@ const AddUpdateProduct = () => {
                             )}
                         </select>
                     </div>
-                    
+
                     <div>
                         <label htmlFor="productimg" className="mt-4 block text-sm font-medium text-gray-900 ">
                             Product Image
@@ -338,11 +358,19 @@ const AddUpdateProduct = () => {
                 </div>
                 <div className="ml-20 mt-12">
                     <Button label="Submit" type="submit" width="32" bgColor="blue" />
-                    <Button label="Reset" type="reset"
+                    <Button
+                        label={id ? 'Cancel' : 'Reset'}
+                        type='reset'
                         onClick={() => {
-                            setFormData(initialFormData)
+                            if (id) {
+                                navigate('/admin/products');
+                            } else {
+                                setFormData(initialFormData);
+                            }
                         }}
-                        width="32" bgColor="red" />
+                        width="32"
+                        bgColor={id ? "gray" : "red"}
+                    />
                 </div>
             </form>
         </>

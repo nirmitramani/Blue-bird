@@ -48,10 +48,18 @@ const AddUpdateProductStockAndSize = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    if (name === 'stockQuantity') {
+      setFormData({
+        ...formData,
+        [name]: value.replace(/\D/g, ''),
+      });
+    }
+    else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
     if (name == 'size') {
       setFormData({
         ...formData,
@@ -64,20 +72,34 @@ const AddUpdateProductStockAndSize = () => {
     e.preventDefault();
     startLoading();
 
+    if (!formData.size || !formData.stockQuantity || !formData.productId) {
+      toast.warning('Please fill in all required fields.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      return;
+    }
+    if (parseFloat(formData.stockQuantity) <= 0) {
+      toast.error(`Stock Quantity must be greater than 0.`, {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
     try {
-      if (!formData.size || !formData.stockQuantity || !formData.productId) {
-        toast.warning('Please fill in all required fields.', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'dark',
-        });
-        return;
-      }
 
       if (id) {
         const response = await axios.put(`${window.react_app_url + window.product_stock_size}/${id}`, formData);
@@ -198,7 +220,7 @@ const AddUpdateProductStockAndSize = () => {
               Stock
             </label>
             <input
-              type="number"
+              type="text"
               id="stockQuantity"
               name="stockQuantity"
               value={formData.stockQuantity}
@@ -211,13 +233,18 @@ const AddUpdateProductStockAndSize = () => {
         <div className="ml-20 mt-12">
           <Button label={id ? 'Update' : 'Submit'} type="submit" width="32" bgColor="blue" />
           <Button
-            label="Reset"
-            type="reset"
+            label={id ? 'Cancel' : 'Reset'}
+            type='reset'
             onClick={() => {
-              setFormData(initialFormData);
+              if (id) {
+                navigate('/admin/product-stock-size');
+
+              } else {
+                setFormData(initialFormData);
+              }
             }}
             width="32"
-            bgColor="red"
+            bgColor={id ? "gray" : "red"}
           />
         </div>
       </form>

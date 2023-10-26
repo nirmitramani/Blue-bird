@@ -181,53 +181,51 @@ const Products = () => {
                     <Loader />
                 ) : (
                     <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
-                        {filteredProducts.length > 0 ? (
-                            <div className="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
-                                <table className="min-w-full leading-normal">
-                                    <thead>
-                                        <tr>
-                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                                Name
-                                            </th>
-                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                                Description
-                                            </th>
-                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                                Price
-                                            </th>
-                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                                Category Name
-                                            </th>
-                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                                Stock Quantity
-                                            </th>
-                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                                Image
-                                            </th>
-                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                                Status
-                                            </th>
-                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                                ACTIONS
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {currentProducts.map((product, index) => (
-                                            <tr
-                                                key={product._id}
-                                                draggable
-                                                onDragStart={() => handleDragStart(product)}
-                                                onDragOver={(e) => e.preventDefault()}
-                                                onDrop={() => handleDragEnd(index, currentProducts, setProducts)}
-                                            >
-                                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                    <div className="flex">
-                                                        <div className="ml-3">
-                                                            <p className="text-gray-900 whitespace-no-wrap">{product.name}</p>
+                        {currentItems.length > 0 ? (
+                            <>
+                                <div className="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
+                                    <table className="min-w-full leading-normal">
+                                        <thead>
+                                            <tr>
+                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                                    Name
+                                                </th>
+                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                                    Description
+                                                </th>
+                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                                    Price
+                                                </th>
+                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                                    Category Name
+                                                </th>
+                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                                    Image
+                                                </th>
+                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                                    Status
+                                                </th>
+                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                                    ACTIONS
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {currentItems.map((product, index) => (
+                                                <tr
+                                                    key={product._id}
+                                                    draggable
+                                                    onDragStart={() => handleDragStart(product)}
+                                                    onDragOver={(e) => e.preventDefault()}
+                                                    onDrop={() => handleDragEnd(index, currentItems, setProducts)}
+                                                >
+                                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                        <div className="flex">
+                                                            <div className="ml-3">
+                                                                <p className="text-gray-900 whitespace-no-wrap">{product.name}</p>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </td>
+                                                    </td>
 
                                                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                         <div className="flex">
@@ -267,24 +265,15 @@ const Products = () => {
                                                         </div>
                                                     </td>
 
-
-                                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                    <div className="flex">
-                                                        <div className="ml-3">
-                                                            <p className="text-gray-600 whitespace-no-wrap">{product.stockquantity}</p>
+                                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                        <div className="flex-shrink-0 w-10 h-10">
+                                                            <img
+                                                                className="h-full rounded-sm w-48"
+                                                                src={`http://localhost:3000/public/images/products/${product.productimg}`}
+                                                                alt={product.name}
+                                                            />
                                                         </div>
-                                                    </div>
-                                                </td>
-
-                                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                    <div className="flex-shrink-0 w-10 h-10">
-                                                        <img
-                                                            className="h-full rounded-sm w-48"
-                                                            src={`http://localhost:3000/public/images/products/${product.productimg}`}
-                                                            alt={product.name}
-                                                        />
-                                                    </div>
-                                                </td>
+                                                    </td>
 
                                                     <td className='bg-white border-b'>
                                                         <label className="relative inline-flex items-center cursor-pointer">

@@ -67,6 +67,37 @@ const AddUpdateCategory = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         startLoading();
+
+        if (!formData.name.trim() ||!formData.gender || (!id && !formData.productcategoryimg)) {
+            toast.warning('Please fill in all required fields.', {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
+            stopLoading();
+            return;
+        }
+
+        if (!/[a-zA-Z]/.test(formData.name)) {
+            toast.warning('Name must contain at least one alphabet character.', {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
+            stopLoading();
+            return;
+        }
+
         const formDataToSend = new FormData();
         formDataToSend.append('name', formData.name);
         formDataToSend.append('gender', formData.gender);
@@ -95,30 +126,6 @@ const AddUpdateCategory = () => {
                     });
                 }
             } else {
-                const requiredFields = ['name', 'productcategoryimg'];
-                let hasMissingFields = false;
-
-                for (const fieldName of requiredFields) {
-                    if (!formData[fieldName]) {
-                        hasMissingFields = true;
-                        break;
-                    }
-                }
-
-                if (hasMissingFields) {
-                    toast.warning('Please fill in all required fields.', {
-                        position: 'top-right',
-                        autoClose: 5000,
-                        hideProgressBar: true,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: 'dark',
-                    });
-                    return;
-                }
-
                 const response = await axios.post(`${window.react_app_url + window.product_category_url}`, formDataToSend, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
@@ -217,17 +224,24 @@ const AddUpdateCategory = () => {
                             name="productcategoryimg"
                             onChange={handleInputChange}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                        // required={id ? false : true}
                         />
                     </div>
                 </div>
                 <div className="ml-20 mt-12">
                     <Button label={id ? 'Update' : 'Submit'} type="submit" width="32" bgColor="blue" />
-                    <Button label="Reset" type="reset"
+                    <Button
+                        label={id ? 'Cancel' : 'Reset'}
+                        type='reset'
                         onClick={() => {
-                            setFormData(initialFormData)
+                            if (id) {
+                                navigate('/admin/product-categories');
+                            } else {
+                                setFormData(initialFormData);
+                            }
                         }}
-                        width="32" bgColor="red" />
+                        width="32"
+                        bgColor={id ? "gray" : "red"}
+                    />
                 </div>
             </form>
         </>
