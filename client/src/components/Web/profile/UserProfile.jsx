@@ -37,7 +37,6 @@ const UserProfile = () => {
   const links = [
     { url: '/profile/dashboard', label: 'Dashboard', icon: <AiOutlineHome /> },
     { url: '/profile/orders', label: 'Orders', icon: <AiOutlineShoppingCart /> },
-    { url: '/profile/account-details', label: 'Account Details', icon: <AiOutlineUser /> },
     { url: '/profile/change-password', label: 'Change Password', icon: <AiFillSetting /> },
     { label: 'Log out', icon: <AiOutlineLogout />, action: logout },
   ];

@@ -1,12 +1,41 @@
-import React, { useState } from 'react'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react'
 
 const CartItems = () => {
     const [quantity, setQuantity] = useState(1);
+    const [cartItemsIds, setCartItemsIds] = useState([]);
+    const [favoriteProducts, setCartItems] = useState([]);
 
     const handleQuantityChange = (event) => {
         setQuantity(event.target.value);
     };
 
+    useEffect(() => {
+        const storedCartItems = localStorage.getItem('cart-items');
+        if (storedCartItems) {
+            setCartItemsIds(JSON.parse(storedCartItems));
+        }
+    }, []);
+
+    useEffect(() => {
+        axios.get(`${window.react_app_url + window.product_url}`)
+            .then(result => {
+                const allProducts = result.data.data;
+
+                // Filter products based on cartItemsIds
+                const filteredCartItemProducts = allProducts.filter(product => cartItemsIds.includes(product._id));
+
+                setCartItems(filteredCartItemProducts);
+            })
+            .catch(err => console.log(err));
+    }, [cartItemsIds]);
+
+
+    const removeFavorite = (productId) => {
+        const updatedCartItems = cartItemsIds.filter((id) => id !== productId);
+        localStorage.setItem('cart-items', JSON.stringify(updatedCartItems));
+        setCartItemsIds(updatedCartItems);
+    };
 
     return (
         <div className="py-16 bg-gray-100">

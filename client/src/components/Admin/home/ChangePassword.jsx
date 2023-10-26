@@ -10,7 +10,7 @@ const ChangePassword = () => {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
-        oldPassword: '', // Add the Old Password field
+        oldPassword: '', 
         password: '',
         confirmPassword: '',
     });
