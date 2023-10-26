@@ -18,7 +18,6 @@ const AddUpdateProduct = () => {
         description: '',
         price: '',
         categoryid: '',
-        stockquantity: '',
         productimg: null,
         productthumbimg: null
     };
@@ -111,7 +110,6 @@ const AddUpdateProduct = () => {
                     'description',
                     'price',
                     'categoryid',
-                    'stockquantity',
                     'productimg',
                     'productthumbimg',
                 ];
@@ -226,19 +224,6 @@ const AddUpdateProduct = () => {
                             onChange={handleInputChange}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             placeholder="Enter Price"
-                            required
-                        />
-                        <label htmlFor="stockquantity" className="mt-4 block text-sm font-medium text-gray-900 ">
-                            Stock Quantity
-                        </label>
-                        <input
-                            type="number"
-                            id="stockquantity"
-                            name="stockquantity"
-                            value={formData.stockquantity}
-                            onChange={handleInputChange}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                            placeholder="Enter Stock Quantity"
                             required
                         />
                         <label htmlFor="category" className="mt-4 block text-sm font-medium text-gray-900">

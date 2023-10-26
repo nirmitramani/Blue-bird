@@ -29,6 +29,10 @@ import Categories from '../modules/product-categories/Categories';
 import AddUpdateCategory from '../modules/product-categories/AddUpdateCategory';
 import ViewCategory from '../modules/product-categories/ViewCategory';
 
+import ProductStockAndSize from '../modules/product-stock-size/ProductStockAndSize';
+import AddUpdateProductStockAndSize from '../modules/product-stock-size/AddUpdateProductStockAndSize';
+import ViewProductStockAndSize from '../modules/product-stock-size/ViewProductStockAndSize';
+
 import CmsPages from '../modules/cms-pages/CmsPages'
 import UpdateCmsPage from '../modules/cms-pages/UpdateCmsPage'
 import ViewCmsPage from '../modules/cms-pages/ViewCmsPage'
@@ -58,6 +62,7 @@ window.order_url = 'order';
 window.order_item_url = 'order-item';
 window.payment_detail_url = 'payment-detail';
 window.coupon_code_url = 'coupon-code';
+window.product_stock_size = 'product-stock-size';
 
 const AdminHero = () => {
   const [open, setOpen] = useState(true);
@@ -106,6 +111,12 @@ const AdminHero = () => {
             <Route path="/admin/product-categories/add" element={AuthElement('admin', <AddUpdateCategory />)} />
             <Route path="/admin/product-categories/update/:id" element={AuthElement('admin', <AddUpdateCategory />)} />
             <Route path="/admin/product-categories/view/:id" element={AuthElement('admin', <ViewCategory />)} />
+            
+            //Product Categories route
+            <Route path="admin/product-stock-size" element={AuthElement('admin', <ProductStockAndSize />)} />
+            <Route path="/admin/product-stock-size/add" element={AuthElement('admin', <AddUpdateProductStockAndSize />)} />
+            <Route path="/admin/product-stock-size/update/:id" element={AuthElement('admin', <AddUpdateProductStockAndSize />)} />
+            <Route path="/admin/product-stock-size/view/:id" element={AuthElement('admin', <ViewProductStockAndSize />)} />
 
             //FAQs routes
             <Route path="admin/faqs" element={AuthElement('admin', <FAQs />)} />
