@@ -172,6 +172,24 @@ const AddUpdateCouponCode = () => {
     }
 
     try {
+<<<<<<< HEAD
+      if (!String(formData.title).trim() || !String(formData.code).trim() || !String(formData.description).trim() || !String(formData.discount).trim() || !String(formData.maxDiscount).trim() || !String(formData.startDate).trim() || !String(formData.endDate).trim() || !String(formData.minimumOrderValue).trim()) {
+        toast.warning('Please fill in all required fields.', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'dark',
+        });
+        stopLoading();
+        return;
+      }
+
+=======
+>>>>>>> 6ec7290802e2c6c5e191a4536e5d96b91d6202ca
       if (id) {
         if (!dataFetched) {
           navigate('/admin/coupon-code');
@@ -247,7 +265,7 @@ const AddUpdateCouponCode = () => {
       <form onSubmit={handleSubmit}>
         <div className="mx-24 space-y-4">
           <div>
-            <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900">
               Title
             </label>
             <input
@@ -261,7 +279,7 @@ const AddUpdateCouponCode = () => {
             />
           </div>
           <div>
-            <label htmlFor="code" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label htmlFor="code" className="block mb-2 text-sm font-medium text-gray-900">
               Code
             </label>
             <input
@@ -275,7 +293,7 @@ const AddUpdateCouponCode = () => {
             />
           </div>
           <div>
-            <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900">
               Description
             </label>
             <input
@@ -289,7 +307,7 @@ const AddUpdateCouponCode = () => {
             />
           </div>
           <div>
-            <label htmlFor="discount" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label htmlFor="discount" className="block mb-2 text-sm font-medium text-gray-900">
               Discount
             </label>
             <input
@@ -303,7 +321,7 @@ const AddUpdateCouponCode = () => {
             />
           </div>
           <div>
-            <label htmlFor="maxDiscount" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label htmlFor="maxDiscount" className="block mb-2 text-sm font-medium text-gray-900">
               Max Discount
             </label>
             <input
@@ -317,7 +335,7 @@ const AddUpdateCouponCode = () => {
             />
           </div>
           <div>
-            <label htmlFor="minimumOrderValue" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label htmlFor="minimumOrderValue" className="block mb-2 text-sm font-medium text-gray-900">
               Minimum Order Value
             </label>
             <input
@@ -331,7 +349,7 @@ const AddUpdateCouponCode = () => {
             />
           </div>
           <div>
-            <label htmlFor="startDate" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label htmlFor="startDate" className="block mb-2 text-sm font-medium text-gray-900">
               Start Date
             </label>
             <input
@@ -346,7 +364,7 @@ const AddUpdateCouponCode = () => {
             />
           </div>
           <div>
-            <label htmlFor="endDate" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label htmlFor="endDate" className="block mb-2 text-sm font-medium text-gray-900">
               End Date
             </label>
             <input

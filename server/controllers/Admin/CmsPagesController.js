@@ -39,6 +39,16 @@ exports.update = async (req, res) => {
             return res.json({ status: false, message: constant.MSG_FOR_CMS_PAGES_NOT_FOUND });
         }
 
+        if (!req.body.title || !req.body.description) {
+            return res.status(400).json({ status: false, message: 'All fields are required' });
+        }
+
+        const existingCms = await CmsPage.findOne({ title: req.body.title, _id: { $ne: id } });
+
+        if (existingCms) {
+            return res.status(400).json({ status: false, message: 'A page with the same title already exists' });
+        }
+
         updatedCms.title = req.body.title;
         updatedCms.description = req.body.description;
         await updatedCms.save();
@@ -52,6 +62,7 @@ exports.update = async (req, res) => {
         res.json({ status: false, message: error.message });
     }
 };
+
 
 exports.counts = async (req, res) => {
     try {
