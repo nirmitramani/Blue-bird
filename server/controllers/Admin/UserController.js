@@ -108,6 +108,13 @@ exports.changePassword = async (req, res) => {
     if (!existingUser) {
       return res.status(404).json({ status: false, message: 'User not found' });
     }
+
+    const isPasswordValid = await bcrypt.compare(req.body.oldPassword, existingUser.password);
+
+    if (!isPasswordValid) {
+      return res.json({ status: false, message: 'Old password is incorrect' });
+    }
+
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
     existingUser.password = hashedPassword;
