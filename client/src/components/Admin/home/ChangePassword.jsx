@@ -33,13 +33,6 @@ const ChangePassword = () => {
         setShowConfirmPassword(!showConfirmPassword);
     };
 
-    const resetForm = () => {
-        setFormData({
-            password: '',
-            confirmPassword: '',
-        });
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
