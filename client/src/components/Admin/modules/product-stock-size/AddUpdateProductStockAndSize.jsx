@@ -5,6 +5,7 @@ import Button from '../../hooks/Button';
 import BreadCrumb from '../../hooks/BreadCrumb';
 import { toast } from 'react-toastify';
 import useLoader from '../../hooks/useLoader';
+import Select from 'react-select';
 
 const AddUpdateProductStockAndSize = () => {
   const navigate = useNavigate();
@@ -12,18 +13,32 @@ const AddUpdateProductStockAndSize = () => {
   const { loading, startLoading, stopLoading, Loader } = useLoader();
 
   const initialFormData = {
-    size: '',
+    size: 'S',
     stockQuantity: '',
     productId: '',
   };
 
   const [formData, setFormData] = useState(initialFormData);
   const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const sizeOptions = [
+    { value: 'S', label: 'S' },
+    { value: 'M', label: 'M' },
+    { value: 'L', label: 'L' },
+    { value: 'XL', label: 'XL' },
+    { value: 'XXL', label: 'XXL' },
+    { value: 'XXXL', label: 'XXXL' },
+  ];
 
   useEffect(() => {
     axios.get(`${window.react_app_url + window.product_url}`)
       .then(res => {
-        setProducts(res.data.data);
+        const productOptions = res.data.data.map(product => ({
+          value: product._id,
+          label: product.name,
+        }));
+        setProducts(productOptions);
       })
       .catch(err => {
         console.error('Error fetching products:', err);
@@ -36,7 +51,12 @@ const AddUpdateProductStockAndSize = () => {
       axios.get(`${window.react_app_url + window.product_stock_size}/${id}`)
         .then(response => {
           const { size, stockQuantity, productId } = response.data.data;
+
+          // Find the corresponding product option
+          const selectedProductOption = products.find(product => product.value === productId);
+
           setFormData({ size, stockQuantity, productId });
+          setSelectedProduct(selectedProductOption);
           stopLoading();
         })
         .catch(error => {
@@ -44,7 +64,7 @@ const AddUpdateProductStockAndSize = () => {
           stopLoading();
         });
     }
-  }, [id]);
+  }, [id, products]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -52,12 +72,14 @@ const AddUpdateProductStockAndSize = () => {
       ...formData,
       [name]: value,
     });
-    if (name == 'size') {
-      setFormData({
-        ...formData,
-        [name]: value.toUpperCase(),
-      });
-    }
+  };
+
+  const handleProductChange = (selectedOption) => {
+    setSelectedProduct(selectedOption);
+    setFormData({
+      ...formData,
+      productId: selectedOption.value,
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -153,48 +175,45 @@ const AddUpdateProductStockAndSize = () => {
     <>
       {loading && <Loader />}
 
-      <div className="p-6 flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between">
+      <div className="p-6 flex flex-col space-y-6 md:space-y-0 md:flex-row justify between">
         <div className="mr-6">
-          <BreadCrumb title="Add Product Stock & Size / " desc={id ? 'Update Product Stock & Size' : 'Add Product Stock & Size'} link="/admin/product-stockQuantity-size" />
+          <BreadCrumb
+            title="Add Product Stock & Size / "
+            desc={id ? 'Update Product Stock & Size' : 'Add Product Stock & Size'}
+            link="/admin/product-stockQuantity-size"
+          />
         </div>
       </div>
       <form onSubmit={handleSubmit}>
         <div className="mx-24 space-y-4">
           <div>
-            <label htmlFor="productId" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label htmlFor="productId" className="block mb-2 text-sm font-medium text-gray-900">
               Select a Product
             </label>
-            <select
+            <Select
               id="productId"
               name="productId"
-              value={formData.productId}
-              onChange={handleInputChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            >
-              <option value="">Select a Product</option>
-              {products.map(product => (
-                <option key={product._id} value={product._id}>
-                  {product.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="size" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Size
-            </label>
-            <input
-              type="text"
-              id="size"
-              name="size"
-              value={formData.size}
-              onChange={handleInputChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="Enter Size"
+              value={selectedProduct}
+              onChange={handleProductChange}
+              options={products}
+              isSearchable
             />
           </div>
           <div>
-            <label htmlFor="stockQuantity" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label htmlFor="size" className="block mb-2 text-sm font-medium text-gray-900">
+              Size
+            </label>
+            <Select
+              id="size"
+              name="size"
+              value={sizeOptions.find(option => option.value === formData.size)}
+              onChange={(selectedOption) => setFormData({ ...formData, size: selectedOption.value })}
+              options={sizeOptions}
+              isSearchable
+            />
+          </div>
+          <div>
+            <label htmlFor="stockQuantity" className="block mb-2 text-sm font-medium text-gray-900">
               Stock
             </label>
             <input

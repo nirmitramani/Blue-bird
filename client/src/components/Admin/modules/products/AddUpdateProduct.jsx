@@ -294,7 +294,7 @@ const AddUpdateProduct = () => {
                             )}
                         </select>
                     </div>
-                    
+
                     <div>
                         <label htmlFor="productimg" className="mt-4 block text-sm font-medium text-gray-900 ">
                             Product Image
