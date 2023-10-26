@@ -14,7 +14,7 @@ const Users = () => {
     const [users, setUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [switchStates, setSwitchStates] = useState({});
-    const { loading, startAnimatedLoading, stopAnimatedLoading, Loader } = useAnimatedLoader();
+    const {loading, startAnimatedLoading, stopAnimatedLoading, Loader } = useAnimatedLoader();
 
     useEffect(() => {
         const initialSwitchStates = {};
@@ -27,15 +27,17 @@ const Users = () => {
     useEffect(() => {
         startAnimatedLoading();
         axios.get(`${window.react_app_url + window.user_url}`)
-            .then(result => {
-                setUsers(result.data.data);
-                stopAnimatedLoading();
-            })
-            .catch(err => {
-                stopAnimatedLoading()
-                console.log(err)
-            })
-    }, []);
+          .then(result => {
+            const user = result.data.data.filter(user => user.role === 'user');
+            setUsers(user);
+            stopAnimatedLoading();
+          })
+          .catch(err => {
+            stopAnimatedLoading();
+            console.log(err);
+          });
+      }, []);
+      
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
@@ -159,11 +161,6 @@ const Users = () => {
                                                 <th
                                                     className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
                                                 >
-                                                    Role
-                                                </th>
-                                                <th
-                                                    className="px-5 py-3 border-b-2 border-gray-200 bg-slate-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-                                                >
                                                     Status
                                                 </th>
                                                 <th
@@ -204,9 +201,6 @@ const Users = () => {
                                                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                         <p className="text-gray-900 whitespace-no-wrap">{user.phone}</p>
                                                     </td>
-                                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                        <p className="text-gray-900 whitespace-no-wrap">{user.role}</p>
-                                                    </td>
                                                     <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
                                                         <label className="relative inline-flex cursor-pointer">
                                                             <input type="checkbox" className="sr-only peer"
@@ -219,14 +213,6 @@ const Users = () => {
                                                     </td>
 
                                                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm space-x-2">
-                                                        <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                                                            <span aria-hidden className="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                            <span className="relative">
-                                                                <Link to={`update/${user._id}`}>
-                                                                    Edit
-                                                                </Link>
-                                                            </span>
-                                                        </span>
                                                         <span className="relative inline-block px-3 py-1 font-semibold text-yellow-900 leading-tight">
                                                             <span aria-hidden className="absolute inset-0 bg-yellow-200 opacity-50 rounded-full"></span>
                                                             <span className="relative">
