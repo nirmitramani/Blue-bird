@@ -110,8 +110,7 @@ exports.changePassword = async (req, res) => {
     }
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-    // existingUser.password = hashedPassword;
-    existingUser.password = req.body.password;
+    existingUser.password = hashedPassword;
 
     const updatedUser = await existingUser.save();
 
