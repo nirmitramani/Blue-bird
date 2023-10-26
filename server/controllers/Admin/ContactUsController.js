@@ -16,22 +16,29 @@ exports.index = async (req, res) => {
 
 exports.store = async (req, res) => {
     try {
+        if (!req.body.name || !req.body.email || !req.body.message) {
+            return res.status(400).json({ status: false, message: 'All fields are required' });
+        }
+
         const ContactUsData = {
             name: req.body.name,
             email: req.body.email,
             message: req.body.message,
         };
+
         const createdContactUs = await ContactUs.create(ContactUsData);
+
         res.status(201).json({
             status: true,
             message: constant.MSG_FOR_CONTACTUS_ADD_SUCCEESFULL,
             data: createdContactUs,
         });
     } catch (error) {
-        console.log({ status: false, message: error.message })
+        console.log({ status: false, message: error.message });
         res.json({ status: false, message: error.message });
     }
 };
+
 
 exports.show = async (req, res) => {
     try {
