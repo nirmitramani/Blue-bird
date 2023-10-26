@@ -61,6 +61,7 @@ const Products = () => {
             })
             .catch(err => {
                 console.log(err);
+                setLoading(false);
             });
     }, []);
 

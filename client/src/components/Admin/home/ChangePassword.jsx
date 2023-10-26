@@ -33,15 +33,22 @@ const ChangePassword = () => {
         setShowConfirmPassword(!showConfirmPassword);
     };
 
-    const resetForm = () => {
-        setFormData({
-            password: '',
-            confirmPassword: '',
-        });
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!formData.password.trim() || !formData.confirmPassword.trim()) {
+            toast.error('All fields are required.', {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
+            return;
+        }
 
         if (formData.password !== formData.confirmPassword) {
             toast.error("Passwords don't match", {

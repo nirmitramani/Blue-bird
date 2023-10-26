@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Button from '../hooks/Button';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import DefaultImage from '../../../assets/images/default/user-default.png';
 
 const Profile = () => {
-    const { id } = useParams();
     const navigate = useNavigate();
 
     const [image, setImage] = useState(null);
@@ -22,23 +21,47 @@ const Profile = () => {
 
     const handleImageChange = (e) => {
         const selectedImage = e.target.files[0];
-
+    
         if (selectedImage) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setImage(e.target.result);
-            };
-            reader.readAsDataURL(selectedImage);
-
+            const validImageTypes = ["image/jpeg", "image/png", "image/webp"];
+    
+            if (validImageTypes.includes(selectedImage.type)) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    setImage(e.target.result);
+                };
+                reader.readAsDataURL(selectedImage);
+    
+                setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    profileimg: selectedImage,
+                }));
+            } else {
+                e.target.value = null;
+                toast.error('Please select a valid image (jpg, png, or webp).', {
+                    position: 'top-right',
+                    autoClose: 5000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: 'dark',
+                });
+            }
+        } else {
+            setImage(null);
             setFormData((prevFormData) => ({
                 ...prevFormData,
-                profileimg: selectedImage,
+                profileimg: null,
             }));
         }
     };
+    
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
         setFormData((prevUserData) => ({
             ...prevUserData,
             [name]: value,
@@ -70,6 +93,20 @@ const Profile = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!formData.userName.trim() || !formData.email.trim()) {
+            toast.error('All fields are required.', {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
+            return;
+        }
+
         const formDataToSend = new FormData();
         formDataToSend.append('userName', formData.userName);
         formDataToSend.append('email', formData.email);
@@ -78,7 +115,7 @@ const Profile = () => {
         }
 
         try {
-            const res = await axios.put(
+            const response = await axios.put(
                 `${window.react_app_url + window.user_url}/${userData._id}`,
                 formDataToSend,
                 {
@@ -88,8 +125,8 @@ const Profile = () => {
                 }
             );
 
-            if (res.data.status) {
-                toast.success(res.data.message, {
+            if (response.data.status) {
+                toast.success(response.data.message, {
                     position: 'top-right',
                     autoClose: 5000,
                     hideProgressBar: true,
@@ -132,6 +169,7 @@ const Profile = () => {
                                             />
                                         ) : (
                                             <img
+                                                src={DefaultImage}
                                                 alt="Profile"
                                                 className="w-32 h-32 rounded-full border-2 border-gray-200 shadow-lg"
                                             />

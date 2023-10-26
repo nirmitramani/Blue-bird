@@ -21,6 +21,7 @@ const Sidebar = ({ open, setOpen }) => {
         { title: "Coupon Code", icon: <BiSolidDiscount />, link: "/admin/coupon-code" },
         { title: "Contacts", icon: <AiOutlineContacts />, link: "/admin/contact-us" },
         { title: "Products", icon: <BiSolidShoppingBags />, link: "/admin/products" },
+        { title: "Products Stock & Size", icon: <BiSolidShoppingBags />, link: "/admin/product-stock-size" },
         { title: "Events", icon: <BsCalendar2Event />, link: "/admin/events" },
         { title: "Product Category", icon: <BiCategoryAlt />, link: "/admin/product-categories" },
         { title: "CMS Pages", icon: <BiSelectMultiple />, link: "/admin/cms-pages" },
