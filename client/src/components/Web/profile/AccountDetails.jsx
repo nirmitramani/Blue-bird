@@ -271,14 +271,14 @@ const AccountDetails = () => {
                                         />
                                     </div>
                                 </div>
-                                {isEditing &&
-                                    <button
-                                        type='submit'
-                                        className='bg-black text-white mt-3 px-4 py-1 w-24'
-                                    >
-                                        SAVE
-                                    </button>
-                                }
+                            {isEditing &&
+                                <button
+                                    type='submit'
+                                    className='bg-black text-white mt-3 px-4 py-1 w-24'
+                                >
+                                    SAVE
+                                </button>
+                            }
                             </div>
                         </form>
                     </div>

@@ -30,7 +30,6 @@ exports.store = async (req, res) => {
       productthumbimg: productthumbimg,
       name: req.body.name,
       description: req.body.description,
-      stockquantity: req.body.stockquantity,
       categoryid: req.body.categoryid,
       price: req.body.price,
     };
@@ -91,7 +90,6 @@ exports.update = async (req, res) => {
     existingProduct.description = req.body.description;
     existingProduct.price = req.body.price;
     existingProduct.categoryid = req.body.categoryid;
-    existingProduct.stockquantity = req.body.stockquantity;
 
     const updatedProduct = await existingProduct.save();
 

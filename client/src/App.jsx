@@ -65,9 +65,9 @@ const App = () => {
         <Route path="favorite" element={<FavoriteProducts />} />
         <Route path="product-detail" element={<ProductDetail />} />
         <Route path="profile/dashboard" element={<Auth element={<Dashboard />} role='user' />} />
-        <Route path="profile/orders" element={<Auth element={<Orders />} role='user' />} />
-        <Route path="profile/change-password" element={<Auth element={<ChangePassword />} role='user' />} />
-        <Route path="profile/account-details" element={<Auth element={<AccountDetails />} role='user' />} />
+        <Route path="profile/orders/:id" element={<Auth element={<Orders />} role='user' />} />
+        <Route path="profile/change-password/:id" element={<Auth element={<ChangePassword />} role='user' />} />
+        <Route path="profile/account-details/:id" element={<Auth element={<AccountDetails />} role='user' />} />
         <Route path="sign-in" element={<AuthGuard element={<SignIn />} role='user' />} />
         <Route path="sign-up" element={<AuthGuard element={<SignUp />} role='user' />} />
       </Routes>

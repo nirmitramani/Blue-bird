@@ -11,7 +11,6 @@ import useAnimatedLoader from '../../hooks/useAnimatedLoader';
 import ConfirmDelete from '../../hooks/ConfirmDelete';
 import { usePagination, Pagination } from '../../hooks/Pagination';
 
-
 const Categories = () => {
 
     const [categories, setCategories] = useState([]);
