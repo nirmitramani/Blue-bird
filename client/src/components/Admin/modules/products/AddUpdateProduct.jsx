@@ -63,20 +63,20 @@ const AddUpdateProduct = () => {
         if (name === 'productimg') {
             const file = files[0];
             if (file) {
-                if (file.type === 'image/jpeg' || file.type === 'image/png') {
+                if (file.type === 'image/jpeg' || file.type === 'image/png'|| file.type === 'image/webp') {
                     setFormData({
                         ...formData,
                         [name]: file,
                     });
                 } else {
                     e.target.value = null;
-                    toast.error('Please select a jpg or png image.');
+                    toast.error('Please select a jpg, webp or png image.');
                 }
             }
         } else if (name === 'productthumbimg') {
             const file = files[0];
             if (file) {
-                if (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg' || file.type === 'image/webp') {
+                if (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp') {
                     setFormData({
                         ...formData,
                         productthumbimg: Array.from(files),
