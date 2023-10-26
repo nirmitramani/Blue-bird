@@ -25,21 +25,27 @@ const AddUpdateProduct = () => {
 
     const [formData, setFormData] = useState(initialFormData);
 
+    const [dataFetched, setDataFetched] = useState(false);
 
     useEffect(() => {
-        if (id) {
+        if (id && !dataFetched) {
             startLoading();
-            axios.get(`${window.react_app_url + window.product_url}/${id}`)
-                .then(response => {
+            axios
+                .get(`${window.react_app_url + window.product_url}/${id}`)
+                .then((response) => {
                     response.data.status ? setFormData(response.data.data) : console.error('Error fetching product data:', error);
+
                     stopLoading();
+                    setDataFetched(true);
                 })
-                .catch(error => {
-                    console.error('Error fetching product data:', error);
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
                     stopLoading();
+                    navigate('/admin/products');
                 });
         }
-    }, [id]);
+    }, [id, dataFetched, navigate]);
+
 
     useEffect(() => {
         axios.get(`${window.react_app_url + window.product_category_url}`)
@@ -105,22 +111,26 @@ const AddUpdateProduct = () => {
 
         try {
             if (id) {
-                // Update existing product
-                const response = await axios.put(`${window.react_app_url + window.product_url}/${id}`, formDataToSend, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-                toast.success(response.data.message, {
-                    position: 'top-right',
-                    autoClose: 5000,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: 'dark',
-                });
+                if (!dataFetched) {
+                    navigate('/admin/products');
+                }
+                if (dataFetched) {
+                    const response = await axios.put(`${window.react_app_url + window.product_url}/${id}`, formDataToSend, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    });
+                    toast.success(response.data.message, {
+                        position: 'top-right',
+                        autoClose: 5000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'dark',
+                    });
+                }
             } else {
                 const requiredFields = [
                     'name',
@@ -297,9 +307,8 @@ const AddUpdateProduct = () => {
                                 </option>
                             )}
                         </select>
-
-
                     </div>
+                    
                     <div>
                         <label htmlFor="productimg" className="mt-4 block text-sm font-medium text-gray-900 ">
                             Product Image
@@ -310,7 +319,6 @@ const AddUpdateProduct = () => {
                             name="productimg"
                             onChange={handleInputChange}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                            required={id ? false : true}
                         />
                     </div>
                     <div>
@@ -323,7 +331,6 @@ const AddUpdateProduct = () => {
                             name="productthumbimg"
                             onChange={handleInputChange}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                            required={id ? false : true}
                             multiple
                         />
                     </div>

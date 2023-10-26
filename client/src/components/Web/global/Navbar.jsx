@@ -42,7 +42,7 @@ const Navbar = () => {
 
   return (
     <header
-      className={`px-4 py-3 bg-gray-800 text-white sticky top-0 z-50 ${isScrolled ? "scrolled" : ""
+      className={`px-4 py-3 bg-black text-white sticky top-0 z-50 ${isScrolled ? "scrolled" : ""
         }`}
     >
       <div className="flex items-center justify-between max-w-6xl mx-auto">

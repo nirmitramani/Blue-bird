@@ -50,7 +50,8 @@ const AddUpdateFAQs = () => {
     e.preventDefault();
     startLoading();
     try {
-      if (!formData.question || !formData.answer) {
+
+      if (!formData.question.trim() || !formData.answer.trim()) {
         toast.warning('Please fill in all required fields.', {
           position: 'top-right',
           autoClose: 5000,

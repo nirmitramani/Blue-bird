@@ -77,11 +77,11 @@ const ChangePassword = () => {
     };
 
     return (
-        <main className="profile-page mt-56">
+        <main className="profile-page pt-[18rem]">
             <section className="relative py-16 bg-blueGray-200">
                 <div className="container mx-auto px-4">
-                    <div className="relative flex flex-col min-w-0 break-words bg-slate-100 w-full mb-6 shadow-xl rounded-lg -mt-64">
-                        <div className="px-6">
+                    <div className="relative flex flex-col min-w-0 break-words bg-slate-100 w-full mb-6 shadow-lg rounded-lg -mt-64">
+                        <div className="px-6 py-12">
                             <form onSubmit={handleSubmit}>
                                 <div className="mx-24 space-y-4">
                                     <div>
@@ -129,13 +129,7 @@ const ChangePassword = () => {
                                 </div>
                                 <div className="ml-20 mt-12">
                                     <Button label="Update" type="submit" width="48" bgColor="blue" />
-                                    <button
-                                        type="button"
-                                        onClick={resetForm}
-                                        className="ml-2 p-2.5 text-blue-600 hover:text-blue-800"
-                                    >
-                                        Reset
-                                    </button>
+                                    <Button label="Reset" type="reset" width="48" bgColor="red" />
                                 </div>
                             </form>
                         </div>

@@ -48,6 +48,7 @@ exports.update = async (req, res) => {
     existingUser.userName = req.body.userName;
     existingUser.email = req.body.email;
     existingUser.phone = req.body.phone;
+    existingUser.gender = req.body.gender;
 
     const updatedUser = await existingUser.save();
 

@@ -19,6 +19,7 @@ const ViewCategory = () => {
                 console.log(err);
             });
     }, []);
+    
 
     return (
         <>
