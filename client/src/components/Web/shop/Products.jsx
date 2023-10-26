@@ -14,6 +14,7 @@ const Products = () => {
     const [favorites, setFavorites] = useState([]);
     const [cartItems, setCartItems] = useState([]);
 
+    
     useEffect(() => {
         const storedFavorites = localStorage.getItem("favorites");
         if (storedFavorites) {
