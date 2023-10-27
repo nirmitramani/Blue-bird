@@ -8,6 +8,7 @@ export default {
         palanquin: ["Palanquin", "sans-serif"],
         montserrat: ["Montserrat", "sans-serif"],
         sans: ['Inter'],
+        
       },
       colors: {
         primary: "#ECEEFF",

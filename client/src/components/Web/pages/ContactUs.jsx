@@ -107,7 +107,7 @@ const ContactUs = () => {
             </div>
             <div className="mx-auto max-w-[700px]">
               <form>
-                <div className="lg:max-w-full w-full m-5 flex items-center max-sm:flex-col gap-5 p-2.5 sm:border sm:border-slate-gray rounded-full">
+                <div className="lg:max-w-full w-full m-5 flex items-center max-sm:flex-col gap-5 p-2.5 sm:border sm:border-slate-gray">
                   <input
                     type="text"
                     name='name'
@@ -117,7 +117,7 @@ const ContactUs = () => {
                     onChange={handleInputChange}
                   />
                 </div>
-                <div className="lg:max-w-full w-full m-5 flex items-center max-sm:flex-col gap-5 p-2.5 sm:border sm:border-slate-gray rounded-full">
+                <div className="lg:max-w-full w-full m-5 flex items-center max-sm:flex-col gap-5 p-2.5 sm:border sm:border-slate-gray">
                   <input
                     type="text"
                     name='email'
@@ -127,7 +127,7 @@ const ContactUs = () => {
                     onChange={handleInputChange}
                   />
                 </div>
-                <div className="lg:max-w-full w-full m-5 flex items-center max-sm:flex-col gap-5 p-2.5 sm:border sm:border-slate-gray rounded-full">
+                <div className="lg:max-w-full w-full m-5 flex items-center max-sm:flex-col gap-5 p-2.5 sm:border sm:border-slate-gray">
                   <input type="text"
                     name='message'
                     placeholder="Enter Messege"

@@ -26,9 +26,10 @@ const CartItems = () => {
         setSubtotal(subtotalAmount);
 
         // Update the local storage
-        const updatedCartItemsIds = updatedCartItems.map((item) => item._id);
+        const updatedCartItemsIds = updatedCartItems.map((item) => ({ productId: item._id, quantity: item.quantity }));
         localStorage.setItem('cart-items', JSON.stringify(updatedCartItemsIds));
     };
+
 
     useEffect(() => {
         const storedCartItems = localStorage.getItem('cart-items');
@@ -43,27 +44,30 @@ const CartItems = () => {
             .then((result) => {
                 const allProducts = result.data.data;
 
-                const filteredCartItemProducts = allProducts.filter((product) =>
-                    cartItemsIds.includes(product._id)
-                );
+                // Extract product IDs and quantities from cartItemsIds
+                const productsWithQuantities = cartItemsIds.map((item) => {
+                    const product = allProducts.find((p) => p._id === item.productId);
+                    if (product) {
+                        return { ...product, quantity: item.quantity };
+                    }
+                    return null;
+                });
 
-                // Initialize quantities for each cart item
-                const cartItemsWithQuantities = filteredCartItemProducts.map((item) => ({
-                    ...item,
-                    quantity: 1,
-                }));
+                // Filter out any null entries (products not found)
+                const filteredCartItemProducts = productsWithQuantities.filter((product) => product);
 
-                setCartItems(cartItemsWithQuantities);
-
-                // Calculate the subtotal based on initial quantities
-                const subtotalAmount = cartItemsWithQuantities.reduce(
+                // Calculate the subtotal based on quantities
+                const subtotalAmount = filteredCartItemProducts.reduce(
                     (total, product) => total + product.price * product.quantity,
                     0
                 );
+
+                setCartItems(filteredCartItemProducts);
                 setSubtotal(subtotalAmount);
             })
             .catch((err) => console.log(err));
     }, [cartItemsIds]);
+
 
     const removeCartItem = (productId) => {
         const updatedCartItems = cartItems.filter((item) => item._id !== productId);
@@ -80,7 +84,7 @@ const CartItems = () => {
                 <div>
                     {cartItems.length === 0 ? (
                         <p>
-                            No favorite products found.
+                            No cart products found.
                             <Link to="/products">
                                 <span className="text-blue-600 hover:underline">
                                     {' '}

@@ -5,6 +5,7 @@ import { FaStarHalfAlt } from "react-icons/fa";
 import Button from "../hooks/Button";
 import { FaSearch } from "react-icons/fa";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 
 const Products = () => {
@@ -42,7 +43,7 @@ const Products = () => {
             .catch(err => console.log(err))
     }, []);
 
-    
+
     useEffect(() => {
         const storedFavorites = localStorage.getItem("favorites");
         if (storedFavorites) {
@@ -73,19 +74,23 @@ const Products = () => {
     };
 
     const toggleCartItems = (productId) => {
-        const isCartItem = cartItems.includes(productId);
+        const isCartItem = cartItems.some(item => item.productId === productId);
 
         let updatedCartItems;
 
         if (isCartItem) {
-            updatedCartItems = cartItems.filter((id) => id !== productId);
+            // Remove the item if it's already in the cart
+            updatedCartItems = cartItems.filter(item => item.productId !== productId);
         } else {
-            updatedCartItems = [...cartItems, productId];
+            // Add the item to the cart with a default quantity of 1
+            const newItem = { productId, quantity: 1 };
+            updatedCartItems = [...cartItems, newItem];
         }
 
         localStorage.setItem("cart-items", JSON.stringify(updatedCartItems));
         setCartItems(updatedCartItems);
     };
+
 
     useEffect(() => {
         axios.get(`${window.react_app_url + window.product_category_url}`)
@@ -112,7 +117,6 @@ const Products = () => {
             <div className="p-20 pt-16 font-montserrat bg-slate-100">
                 <div className="container">
                     <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-
                         {/* Filter Checkboxes */}
                         <div className="lg:col-span-1 mt-8">
                             <div className="-ml-1">
@@ -189,47 +193,50 @@ const Products = () => {
                                             <div className="relative overflow-hidden bg-cover">
                                                 <img
                                                     src={`http://localhost:3000/public/images/products/${product.productimg}`}
-                                                    className="w-[224px] h-[336px] transition duration-700 ease-in-out hover:shadow-2xl hover:scale-110"
+                                                    className="w-[224px] h-[336px] transition duration-700 ease-in-out  hover:scale-105"
                                                     alt={product.name}
                                                     loading="lazy" />
                                             </div>
-                                            <div className="opacity-0 group-hover:opacity-100 absolute top-4 right-[0.1rem] flex items-center transition-opacity duration-300" onClick={() => toggleCartItems(product._id)}>
+                                            <div className="opacity-0 group-hover:opacity-100 absolute top-4 right-[1rem] flex items-center transition-opacity duration-300" onClick={() => toggleCartItems(product._id)}>
                                                 <button>
                                                     <div className="bg-gray-300 text-white p-2 text-xl">
-                                                        {cartItems.includes(product._id) ? <BsFillCartCheckFill className="w-5" /> : <BsCartPlusFill className="w-5" />}                                                    </div>
+                                                        {cartItems.some((item) => item.productId === product._id) ? <BsFillCartCheckFill className="w-5" /> : <BsCartPlusFill className="w-5" />}
+                                                    </div>
                                                 </button>
                                             </div>
-                                            <div className="opacity-0 group-hover:opacity-100 absolute top-14 right-[0.1rem] flex items-center transition-opacity duration-300" onClick={() => toggleFavorite(product._id)}>
+                                            <div className="opacity-0 group-hover:opacity-100 absolute top-14 right-[1rem] flex items-center transition-opacity duration-300" onClick={() => toggleFavorite(product._id)}>
                                                 <button>
                                                     <div className="bg-gray-300 text-white p-2 text-xl">
                                                         {favorites.includes(product._id) ? <AiFillHeart className="w-5" /> : <AiOutlineHeart className="w-5" />}
                                                     </div>
                                                 </button>
                                             </div>
-                                            <div className="mt-8 flex justify-start gap-2.5">
-                                                {[1, 2, 3, 4, 5].map((star) => (
-                                                    <span key={star}>
-                                                        {star <= calculateAverageRating(product).fullStars ? (
-                                                            <AiFillStar className="text-xl text-yellow-500" />
-                                                        ) : (
-                                                            star === calculateAverageRating(product).fullStars + 1 && calculateAverageRating(product).hasHalfStar ? (
-                                                                <FaStarHalfAlt className="text-xl text-yellow-500" />
+                                            <Link to={`/product-detail/${product._id}`}>
+                                                <div className="mt-8 flex justify-start gap-2.5">
+                                                    {[1, 2, 3, 4, 5].map((star) => (
+                                                        <span key={star}>
+                                                            {star <= calculateAverageRating(product).fullStars ? (
+                                                                <AiFillStar className="text-xl text-yellow-500" />
                                                             ) : (
-                                                                <AiOutlineStar className="text-xl text-yellow-500" />
-                                                            )
-                                                        )}
+                                                                star === calculateAverageRating(product).fullStars + 1 && calculateAverageRating(product).hasHalfStar ? (
+                                                                    <FaStarHalfAlt className="text-xl text-yellow-500" />
+                                                                ) : (
+                                                                    <AiOutlineStar className="text-xl text-yellow-500" />
+                                                                )
+                                                            )}
+                                                        </span>
+                                                    ))}
+                                                    <span className="text-gray-400 text-xs ml-2">
+                                                        ({calculateAverageRating(product).ratingCount} ratings)
                                                     </span>
-                                                ))}
-                                                <span className="text-gray-400 text-xs ml-2">
-                                                    ({calculateAverageRating(product).ratingCount} ratings)
-                                                </span>
-                                            </div>
-                                            <h3 className="mt-2 text-sm leading-normal font-semibold font-palanquin">
-                                                {product.name}
-                                            </h3>
-                                            <p className="mt-2 font-semibold font-montserrat text-navy-blue text-lg leading-normal">
-                                                ₹ {product.price}.00
-                                            </p>
+                                                </div>
+                                                <h3 className="mt-2 text-sm leading-normal font-semibold font-palanquin">
+                                                    {product.name}
+                                                </h3>
+                                                <p className="mt-2 font-semibold font-montserrat text-navy-blue text-lg leading-normal">
+                                                    Rs. {product.price}.00
+                                                </p>
+                                            </Link>
                                         </div>
                                     ))}
                                 </div>
@@ -242,7 +249,7 @@ const Products = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     );
 };

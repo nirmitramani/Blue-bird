@@ -10,12 +10,12 @@ const Button = ({
   return (
     <button
       onClick={onClick}
-      className={`flex justify-center items-center gap-2 px-7 py-4 border font-montserrat text-lg leading-none
+      className={`flex justify-center items-center gap-2 px-8 py-3 border font-montserrat text-lg leading-none
       ${
         backgroundColor
           ? `${backgroundColor} ${textColor} ${borderColor}`
-          : "bg-navy-blue text-white border-navy-blue"
-      } rounded-full ${fullWidth && "w-full"}`}
+          : "bg-black text-white border-black"
+      } ${fullWidth && "w-full"}`}
     >
       {label}
 

@@ -258,7 +258,7 @@ const Products = () => {
                                                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                         <div className="flex-shrink-0 w-10 h-10">
                                                             <img
-                                                                className="h-full rounded-sm w-48"
+                                                                className="rounded-sm"
                                                                 src={`http://localhost:3000/public/images/products/${product.productimg}`}
                                                                 alt={product.name}
                                                             />
