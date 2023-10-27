@@ -141,6 +141,7 @@ const AddUpdateCouponCode = () => {
       stopLoading();
       return;
     }
+    
     if (parseFloat(formData.maxDiscount) <= 0) {
       toast.error(`Max Discount must be greater than 0.`, {
         position: 'top-right',

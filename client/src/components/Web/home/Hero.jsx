@@ -6,7 +6,6 @@ import SuperQuality from "./SuperbQuality";
 import SpecialOffer from "./SpecialOffer";
 import CustomerReviews from "./CustomerReview";
 import axios from "axios";
-import Subscribe from "./Subscribe";
 
 const Hero = () => {
   const [boxImg, setBoxImg] = useState('');
@@ -134,9 +133,6 @@ const Hero = () => {
       </section>
       <section className="bg-pale-blue padding">
         <CustomerReviews />
-      </section>
-      <section className="padding-x sm:py-32 py-16 w-full">
-        <Subscribe />
       </section>
     </>
   );

@@ -35,6 +35,7 @@ import Dashboard from './components/Web/profile/Dashboard';
 import ChangePassword from './components/Web/profile/ChangePassword';
 import CartItems from './components/Web/pages/CartItems';
 import FavoriteProducts from './components/Web/pages/FavoriteProducts';
+import Sale from './components/Web/pages/Sale';
 
 // Backend route url
 window.react_app_url = 'http://localhost:3000/';
@@ -62,6 +63,7 @@ const App = () => {
         <Route path="services" element={<Services />} />
         <Route path="products" element={<Products />} />
         <Route path="cart" element={<CartItems />} />
+        <Route path="sale" element={<Sale />} />
         <Route path="favorite" element={<FavoriteProducts />} />
         <Route path="product-detail/:id" element={<ProductDetail />} />
         <Route path="profile/dashboard/:id" element={<Auth element={<Dashboard />} role='user' />} />

@@ -6,7 +6,7 @@ import BreadCrumb from '../../hooks/BreadCrumb';
 import { toast } from 'react-toastify';
 import useLoader from '../../hooks/useLoader';
 
-const AddUpdateEvent = () => {
+const AddUpdateSale = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { loading, startLoading, stopLoading, Loader } = useLoader();
@@ -14,7 +14,7 @@ const AddUpdateEvent = () => {
   const initialFormData = {
     name: '',
     description: '',
-    eventimg: '',
+    saleimg: '',
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -24,7 +24,7 @@ const AddUpdateEvent = () => {
     if (id && !dataFetched) {
       startLoading();
       axios
-        .get(`${window.react_app_url + window.event_url}/${id}`)
+        .get(`${window.react_app_url + window.sale_url}/${id}`)
         .then((response) => {
           const { name, description } = response.data.data;
           setFormData({ name, description });
@@ -34,14 +34,14 @@ const AddUpdateEvent = () => {
         .catch((error) => {
           console.error('Error fetching data:', error);
           stopLoading();
-          navigate('/admin/events');
+          navigate('/admin/sale');
         });
     }
   }, [id, dataFetched, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
-    if (name === 'eventimg') {
+    if (name === 'saleimg') {
       const file = files[0];
       if (file) {
         if (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp') {
@@ -67,7 +67,7 @@ const AddUpdateEvent = () => {
     e.preventDefault();
     startLoading();
 
-    if (!formData.name.trim() || !formData.description.trim() || (!id && !formData.eventimg)) {
+    if (!formData.name.trim() || !formData.description.trim() || (!id && !formData.saleimg)) {
       toast.warning('Please fill in all required fields.', {
         position: 'top-right',
         autoClose: 5000,
@@ -114,16 +114,16 @@ const AddUpdateEvent = () => {
     const formDataToSend = new FormData();
     formDataToSend.append('name', formData.name.trim());
     formDataToSend.append('description', formData.description.trim());
-    formDataToSend.append('eventimg', formData.eventimg);
+    formDataToSend.append('saleimg', formData.saleimg);
 
     try {
       if (id) {
 
         if (!dataFetched) {
-          navigate('/admin/events');
+          navigate('/admin/sale');
         }
         if (dataFetched) {
-          const response = await axios.put(`${window.react_app_url + window.event_url}/${id}`, formDataToSend,
+          const response = await axios.put(`${window.react_app_url + window.sale_url}/${id}`, formDataToSend,
             {
               headers: {
                 'Content-Type': 'multipart/form-data',
@@ -141,7 +141,7 @@ const AddUpdateEvent = () => {
           });
         }
       } else {
-        const response = await axios.post(`${window.react_app_url + window.event_url}`, formDataToSend, {
+        const response = await axios.post(`${window.react_app_url + window.sale_url}`, formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -157,7 +157,7 @@ const AddUpdateEvent = () => {
           theme: 'dark',
         });
       }
-      navigate('/admin/events');
+      navigate('/admin/sale');
     } catch (error) {
       toast.error(error, {
         position: 'top-right',
@@ -181,7 +181,7 @@ const AddUpdateEvent = () => {
 
       <div className="p-6 flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between">
         <div className="mr-6">
-          <BreadCrumb title="Event / " desc={id ? 'Update Event' : 'Add Event'} link="/admin/events" />
+          <BreadCrumb title="Sale / " desc={id ? 'Update Sale' : 'Add Sale'} link="/admin/sale" />
         </div>
       </div>
 
@@ -219,13 +219,13 @@ const AddUpdateEvent = () => {
           </div>
 
           <div>
-            <label htmlFor="eventimg" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label htmlFor="saleimg" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
               Image
             </label>
             <input
               type="file"
-              id="eventimg"
-              name="eventimg"
+              id="saleimg"
+              name="saleimg"
               onChange={handleInputChange}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             />
@@ -238,7 +238,7 @@ const AddUpdateEvent = () => {
             type='reset'
             onClick={() => {
               if (id) {
-                navigate('/admin/events');
+                navigate('/admin/sale');
               } else {
                 setFormData(initialFormData);
               }
@@ -252,4 +252,4 @@ const AddUpdateEvent = () => {
   );
 };
 
-export default AddUpdateEvent;
+export default AddUpdateSale;

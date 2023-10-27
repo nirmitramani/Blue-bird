@@ -20,6 +20,7 @@ const Navbar = () => {
     { href: "/about-us", label: "About" },
     { href: "/services", label: "Services" },
     { href: "/contact-us", label: "Contacts" },
+    { href: "/sale", label: "Sale" },
   ];
 
   const fetchData = async () => {

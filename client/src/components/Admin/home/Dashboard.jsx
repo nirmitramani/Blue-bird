@@ -60,7 +60,7 @@ const Dashboard = () => {
         },
         {
             name: 'Events',
-            url: `${window.react_app_url + window.event_url}/count`,
+            url: `${window.react_app_url + window.sale_url}/count`,
             icon: <BsCalendar2Event />,
             link: '/admin/events',
             color: 'text-amber-600',

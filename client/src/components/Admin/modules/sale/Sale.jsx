@@ -11,15 +11,15 @@ import useAnimatedLoader from '../../hooks/useAnimatedLoader';
 import ConfirmDelete from '../../hooks/ConfirmDelete';
 import { usePagination, Pagination } from '../../hooks/Pagination';
 
-const Event = () => {
-    const [events, setEvents] = useState([]);
+const Sale = () => {
+    const [sale, setSale] = useState([]);
     const [switchStates, setSwitchStates] = useState({});
     const { loading, startAnimatedLoading, stopAnimatedLoading, Loader } = useAnimatedLoader();
     const [searchQuery, setSearchQuery] = useState('');
 
     const handleReorder = async (newOrder) => {
         try {
-            await axios.post(`${window.react_app_url + window.event_url}/reorder`, { newOrder });
+            await axios.post(`${window.react_app_url + window.sale_url}/reorder`, { newOrder });
             return true;
         } catch (error) {
             console.error('Error:', error);
@@ -30,17 +30,17 @@ const Event = () => {
 
     useEffect(() => {
         const initialSwitchStates = {};
-        events.forEach((event) => {
-            initialSwitchStates[event._id] = event.status === 'Active';
+        sale.forEach((sale) => {
+            initialSwitchStates[sale._id] = sale.status === 'Active';
         });
         setSwitchStates(initialSwitchStates);
-    }, [events]);
+    }, [sale]);
 
     useEffect(() => {
         startAnimatedLoading()
-        axios.get(`${window.react_app_url + window.event_url}`)
+        axios.get(`${window.react_app_url + window.sale_url}`)
             .then(result => {
-                setEvents(result.data.data);
+                setSale(result.data.data);
                 stopAnimatedLoading()
             })
             .catch(err => {
@@ -62,7 +62,7 @@ const Event = () => {
 
         const newStatus = switchStates[id] ? 'Inactive' : 'Active';
 
-        axios.put(`${window.react_app_url + window.event_url}/status/${id}`, { status: newStatus })
+        axios.put(`${window.react_app_url + window.sale_url}/status/${id}`, { status: newStatus })
             .then(res => {
                 console.log(res);
                 const message = `Status updated to ${newStatus}`;
@@ -86,14 +86,14 @@ const Event = () => {
         ConfirmDelete()({
             title: 'Confirm Deletion',
             message: 'Are you sure you want to delete this?',
-            onConfirm: () => deleteEvent(id),
+            onConfirm: () => deleteSale(id),
         });
     };
 
-    const deleteEvent = async (id) => {
+    const deleteSale = async (id) => {
         try {
-            const response = await axios.delete(`${window.react_app_url + window.event_url}/${id}`);
-            setEvents((prevEvents) => prevEvents.filter((event) => event._id !== id));
+            const response = await axios.delete(`${window.react_app_url + window.sale_url}/${id}`);
+            setSale((prevSale) => prevSale.filter((sale) => sale._id !== id));
             toast.success(response.data.message, {
                 position: 'top-right',
                 autoClose: 5000,
@@ -109,22 +109,22 @@ const Event = () => {
         }
     };
 
-    const filteredEvents = useMemo(() => {
-        return events.filter((event) => {
-            return event.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const filteredSale = useMemo(() => {
+        return sale.filter((sale) => {
+            return sale.name.toLowerCase().includes(searchQuery.toLowerCase());
         });
-    }, [events, searchQuery]);
+    }, [sale, searchQuery]);
 
-    const { currentPage, totalPages, handlePageChange, currentItems } = usePagination(filteredEvents);
+    const { currentPage, totalPages, handlePageChange, currentItems } = usePagination(filteredSale);
 
     return (
         <>
 
             <div className="p-6 flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between">
-                <BreadCrumb title="Event" desc="" link="/admin" />
+                <BreadCrumb title="Sale" desc="" link="/admin" />
                 <div className="flex flex-wrap items-start justify-end -mb-3 p-4">
-                    <Link to="/admin/events/add">
-                        <Button label="Add new Event" iconURL={<AiOutlinePlus />} />
+                    <Link to="/admin/sale/add">
+                        <Button label="Add new sale" iconURL={<AiOutlinePlus />} />
                     </Link>
                 </div>
             </div>
@@ -139,7 +139,7 @@ const Event = () => {
                         className="peer h-full w-full outline-none text-sm text-gray-700 pr-2"
                         type="search"
                         id="search"
-                        placeholder="Search event"
+                        placeholder="Search sale"
                         value={searchQuery}
                         onChange={handleSearchChange}
                     />
@@ -175,25 +175,25 @@ const Event = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {currentItems.map((event, index) => (
+                                        {currentItems.map((sale, index) => (
                                             <tr
-                                                key={event._id}
+                                                key={sale._id}
                                                 draggable
-                                                onDragStart={() => handleDragStart(event)}
+                                                onDragStart={() => handleDragStart(sale)}
                                                 onDragOver={(e) => e.preventDefault()}
-                                                onDrop={() => handleDragEnd(index, currentItems, setEvents)}
+                                                onDrop={() => handleDragEnd(index, currentItems, setSale)}
                                             >
                                                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                     <div className="flex">
                                                         <div className="ml-3">
-                                                            <p className="text-gray-900 whitespace-no-wrap">{event.name}</p>
+                                                            <p className="text-gray-900 whitespace-no-wrap">{sale.name}</p>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                     <div className="flex">
                                                         <div className="ml-3">
-                                                            <p className="text-gray-900 whitespace-no-wrap">{event.description}</p>
+                                                            <p className="text-gray-900 whitespace-no-wrap">{sale.description}</p>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -201,8 +201,8 @@ const Event = () => {
 
                                                     <img
                                                         className="h-full rounded-sm w-20"
-                                                        src={`http://localhost:3000/public/images/events/${event.eventimg}`}
-                                                        alt={event.name}
+                                                        src={`http://localhost:3000/public/images/sale/${sale.saleimg}`}
+                                                        alt={sale.name}
                                                         loading='eager'
                                                     />
 
@@ -210,9 +210,9 @@ const Event = () => {
                                                 <td className='bg-white border-b'>
                                                     <label className="relative inline-flex items-center cursor-pointer">
                                                         <input type="checkbox" className="sr-only peer"
-                                                            id={`flexSwitchCheckChecked_${event._id}`}
-                                                            checked={switchStates[event._id] || false}
-                                                            onChange={() => handleStatusChange(event._id)}
+                                                            id={`flexSwitchCheckChecked_${sale._id}`}
+                                                            checked={switchStates[sale._id] || false}
+                                                            onChange={() => handleStatusChange(sale._id)}
                                                         />
                                                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                                                     </label>
@@ -221,7 +221,7 @@ const Event = () => {
                                                     <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
                                                         <span aria-hidden className="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
                                                         <span className="relative">
-                                                            <Link to={`update/${event._id}`}>
+                                                            <Link to={`update/${sale._id}`}>
                                                                 <button>Edit</button>
                                                             </Link>
                                                         </span>
@@ -229,7 +229,7 @@ const Event = () => {
                                                     <span className="relative inline-block px-3 py-1 font-semibold text-yellow-900 leading-tight">
                                                         <span aria-hidden className="absolute inset-0 bg-yellow-200 opacity-50 rounded-full"></span>
                                                         <span className="relative">
-                                                            <Link to={`view/${event._id}`}>
+                                                            <Link to={`view/${sale._id}`}>
                                                                 <button>View</button>
                                                             </Link>
                                                         </span>
@@ -237,7 +237,7 @@ const Event = () => {
                                                     <span className="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
                                                         <span aria-hidden className="absolute inset-0 bg-red-200 opacity-50 rounded-full"></span>
                                                         <span className="relative">
-                                                            <button onClick={() => handleDelete(event._id)}>Delete</button>
+                                                            <button onClick={() => handleDelete(sale._id)}>Delete</button>
                                                         </span>
                                                     </span>
                                                 </td>
@@ -261,4 +261,4 @@ const Event = () => {
     );
 }
 
-export default Event
+export default Sale

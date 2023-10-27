@@ -22,9 +22,9 @@ import Products from '../modules/products/Products';
 import AddUpdateProduct from '../modules/products/AddUpdateProduct';
 import ViewProduct from '../modules/products/ViewProduct';
 
-import Event from '../modules/events/Event';
-import AddUpdateEvent from '../modules/events/AddUpdateEvent';
-import ViewEvent from '../modules/events/ViewEvent';
+import Sale from '../modules/sale/Sale';
+import AddUpdateSale from '../modules/sale/AddUpdateSale';
+import ViewSale from '../modules/sale/ViewSale';
 
 import Categories from '../modules/product-categories/Categories';
 import AddUpdateCategory from '../modules/product-categories/AddUpdateCategory';
@@ -55,7 +55,7 @@ import { Auth, AuthGuard } from '../../Auth';
 
 window.contact_url = 'contact-us';
 window.cms_page_url = 'cms-pages';
-window.event_url = 'event';
+window.sale_url = 'sale';
 window.faq_url = 'faqs';
 window.product_category_url = 'productCategory';
 window.product_url = 'product';
@@ -103,11 +103,11 @@ const AdminHero = () => {
             <Route path="/admin/products/update/:id" element={AuthElement('admin', <AddUpdateProduct />)} />
             <Route path="/admin/products/view/:id" element={AuthElement('admin', <ViewProduct />)} />
 
-            //Events route
-            <Route path="admin/events" element={AuthElement('admin', <Event />)} />
-            <Route path="/admin/events/add" element={AuthElement('admin', <AddUpdateEvent />)} />
-            <Route path="/admin/events/update/:id" element={AuthElement('admin', <AddUpdateEvent />)} />
-            <Route path="/admin/events/view/:id" element={AuthElement('admin', <ViewEvent />)} />
+            //Sale route
+            <Route path="admin/sale" element={AuthElement('admin', <Sale />)} />
+            <Route path="/admin/sale/add" element={AuthElement('admin', <AddUpdateSale />)} />
+            <Route path="/admin/sale/update/:id" element={AuthElement('admin', <AddUpdateSale />)} />
+            <Route path="/admin/sale/view/:id" element={AuthElement('admin', <ViewSale />)} />
 
             //Product Categories route
             <Route path="admin/product-categories" element={AuthElement('admin', <Categories />)} />

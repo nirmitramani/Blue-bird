@@ -22,7 +22,7 @@ const Sidebar = ({ open, setOpen }) => {
         { title: "Contacts", icon: <AiOutlineContacts />, link: "/admin/contact-us" },
         { title: "Products", icon: <BiSolidShoppingBags />, link: "/admin/products" },
         { title: "Products Stock & Size", icon: <BiSolidShoppingBags />, link: "/admin/product-stock-size" },
-        { title: "Events", icon: <BsCalendar2Event />, link: "/admin/events" },
+        { title: "Sale", icon: <BsCalendar2Event />, link: "/admin/sale" },
         { title: "Product Category", icon: <BiCategoryAlt />, link: "/admin/product-categories" },
         { title: "CMS Pages", icon: <BiSelectMultiple />, link: "/admin/cms-pages" },
         { title: "Reviews", icon: <BiSelectMultiple />, link: "/admin/review" },

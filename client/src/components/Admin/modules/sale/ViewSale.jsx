@@ -3,15 +3,15 @@ import BreadCrumb from '../../hooks/BreadCrumb';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
-const ViewEvent = () => {
+const ViewSale = () => {
     const { id } = useParams()
     const [loading, setLoading] = useState(true);
-    const [events, setEvent] = useState(null);
+    const [sale, setSale] = useState(null);
 
     useEffect(() => {
-        axios.get(`${window.react_app_url + window.event_url}/${id}`)
+        axios.get(`${window.react_app_url + window.sale_url}/${id}`)
             .then(result => {
-                setEvent(result.data.data);
+                setSale(result.data.data);
                 setLoading(false);
             })
             .catch(err => {
@@ -24,7 +24,7 @@ const ViewEvent = () => {
         <>
             <div className="p-6 flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between">
                 <div className="mr-6">
-                    <BreadCrumb title="Event / " desc='View Event' link="/admin/events" />
+                    <BreadCrumb title="Sale / " desc='View Sale' link="/admin/sale" />
                 </div>
             </div>
 
@@ -39,20 +39,20 @@ const ViewEvent = () => {
                                 <tbody>
                                     <tr className='px-5 py-5 border border-gray-200 bg-white text-sm'>
                                         <th className='p-4'>Title</th>
-                                        <td>{events.name}</td>
+                                        <td>{sale.name}</td>
                                     </tr>
                                     <tr className='px-5 py-5 border border-gray-200 bg-white text-sm'>
                                         <th className='p-4'>Title</th>
-                                        <td>{events.description}</td>
+                                        <td>{sale.description}</td>
                                     </tr>
-                                    <tr key={events._id} className='px-5 py-5 border border-gray-200 bg-white text-sm'>
+                                    <tr key={sale._id} className='px-5 py-5 border border-gray-200 bg-white text-sm'>
                                         <th className='p-4'>Status</th>
                                         <td>
-                                            <span className={`relative inline-block px-3 py-1 font-semibold ${events.status === 'Inactive' ? 'text-red-900' : 'text-green-900'
+                                            <span className={`relative inline-block px-3 py-1 font-semibold ${sale.status === 'Inactive' ? 'text-red-900' : 'text-green-900'
                                                 } leading-tight`}>
-                                                <span aria-hidden className={`absolute inset-0 ${events.status === 'Inactive' ? 'bg-red-200' : 'bg-green-200'} opacity-50 rounded-full`}></span>
+                                                <span aria-hidden className={`absolute inset-0 ${sale.status === 'Inactive' ? 'bg-red-200' : 'bg-green-200'} opacity-50 rounded-full`}></span>
                                                 <span className="relative">
-                                                    {events.status}
+                                                    {sale.status}
                                                 </span>
                                             </span>
                                         </td>
@@ -61,8 +61,8 @@ const ViewEvent = () => {
                                         <th className='p-4'>Image</th>
                                         <td className='flex'>
                                             <img
-                                                src={`http://localhost:3000/public/images/events/${events.eventimg}`}
-                                                alt={events.title}
+                                                src={`http://localhost:3000/public/images/sale/${sale.saleimg}`}
+                                                alt={sale.title}
                                                 className='w-48 p-4'
                                             />
                                         </td>
@@ -77,4 +77,4 @@ const ViewEvent = () => {
     );
 };
 
-export default ViewEvent;
+export default ViewSale;
