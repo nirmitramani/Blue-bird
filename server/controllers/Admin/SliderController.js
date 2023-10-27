@@ -17,12 +17,29 @@ exports.index = async (req, res) => {
 
 exports.store = async (req, res) => {
   try {
-    // Find the total count of sliders
+    
+    if (!req.file || !req.file.filename || !req.body.title) {
+      return res.status(400).json({
+        status: false,
+        message: "All fields are required.",
+      });
+    }
+
+    
+    const isTitleUnique = await Slider.findOne({ title: req.body.title });
+    if (isTitleUnique) {
+      return res.status(400).json({
+        status: false,
+        message: "Title must be unique. A slider with the same title already exists.",
+      });
+    }
+
+    
     const totalCount = await Slider.countDocuments();
 
     const sliderData = {
-      sliderimg: req.file.filename,
-      title: req.body.title,
+      sliderimg: req.file.filename.trim(),
+      title: req.body.title.trim(),
       order: totalCount + 1,
     };
 
@@ -35,7 +52,7 @@ exports.store = async (req, res) => {
     });
   } catch (error) {
     console.log({ status: false, message: error.message });
-    res.json({ status: false, message: error.message });
+    res.status(500).json({ status: false, message: error.message });
   }
 };
 
@@ -55,6 +72,22 @@ exports.show = async (req, res) => {
 exports.update = async (req, res) => {
   const { id } = req.params;
   try {
+    if (!req.file || !req.file.filename || !req.body.title) {
+      return res.status(400).json({
+        status: false,
+        message: "All fields are required.",
+      });
+    }
+
+    
+    const isTitleUnique = await Slider.findOne({ title: req.body.title });
+    if (isTitleUnique) {
+      return res.status(400).json({
+        status: false,
+        message: "Title must be unique. A slider with the same title already exists.",
+      });
+    }
+
     const updatedSlider = await Slider.findById(id);
 
     if (!updatedSlider) {
@@ -66,8 +99,8 @@ exports.update = async (req, res) => {
       deleteImage(imagePath);
     }
 
-    updatedSlider.sliderimg = req.file ? req.file.filename : updatedSlider.sliderimg;
-    updatedSlider.title = req.body.title;
+    updatedSlider.sliderimg = req.file ? req.file.filename.trim() : updatedSlider.sliderimg;
+    updatedSlider.title = req.body.title.trim();
     const savedSlider = await updatedSlider.save();
 
     res.status(200).json({
@@ -96,19 +129,16 @@ exports.delete = async (req, res) => {
   }
 };
 
-
-//update the status using id
 exports.statusChnage = (req, res) => {
   const sliderId = req.params.id;
   const { status } = req.body;
 
   Slider.findByIdAndUpdate(sliderId, { status })
     .then(updatedUser => {
-      res.json(updatedUser);
+      res.json({ status: false, updatedUser: updatedUser});
     })
     .catch(err => {
-      console.error(err);
-      res.status(500).json({ error: constant.MSG_FOR_FAILED_UPDATE_STATUS });
+      res.json({ status: false, error: constant.MSG_FOR_FAILED_UPDATE_STATUS });
     });
 };
 
@@ -124,19 +154,17 @@ exports.reorder = async (req, res) => {
         await slider.save();
       }
     }
-    res.status(200).json({ message: constant.MSG_FOR_TABLE_ORDER_UPDATE_SUCCESSFULL });
+    res.status(200).json({ status: true, message: constant.MSG_FOR_TABLE_ORDER_UPDATE_SUCCESSFULL });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: constant.MSG_FOR_INTERNAL_SERVER_ERROR });
+    res.status(500).json({ status: false, error: constant.MSG_FOR_INTERNAL_SERVER_ERROR });
   }
 };
 
 exports.counts = async (req, res) => {
   try {
     const count = await Slider.countDocuments({});
-    res.json({ count });
+    res.json({ status: true, count: count });
   } catch (error) {
-    console.error('Error counting Slider:', error);
-    res.status(500).json({ error: 'Could not count Slider' });
+    res.status(500).json({ status: false, error: 'Could not count Slider' });
   }
 };

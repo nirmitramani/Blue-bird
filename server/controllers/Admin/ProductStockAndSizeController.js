@@ -17,11 +17,44 @@ exports.index = async (req, res) => {
 
 exports.store = async (req, res) => {
     try {
+        
+        if (!req.body.size || !req.body.stockQuantity || !req.body.productId) {
+            return res.status(400).json({
+                status: false,
+                message: "All fields are required.",
+            });
+        }
+
+        
+        const stockQuantity = parseInt(req.body.stockQuantity);
+        if (isNaN(stockQuantity) || stockQuantity <= 0) {
+            return res.status(400).json({
+                status: false,
+                message: "stockQuantity must be a positive number.",
+            });
+        }
+
+        
+        const existingRecord = await ProductStockAndSize.findOne({
+            where: {
+                productId: req.body.productId,
+                size: req.body.size
+            }
+        });
+
+        if (existingRecord) {
+            return res.status(400).json({
+                status: false,
+                message: "A record with the same productId and size already exists.",
+            });
+        }
+
         const ProductStockAndSizeData = {
             size: req.body.size,
-            stockQuantity: req.body.stockQuantity,
+            stockQuantity: stockQuantity, 
             productId: req.body.productId,
         };
+        
         const createdProductStockAndSize = await ProductStockAndSize.create(ProductStockAndSizeData);
         res.status(201).json({
             status: true,
@@ -29,10 +62,11 @@ exports.store = async (req, res) => {
             data: createdProductStockAndSize,
         });
     } catch (error) {
-        console.log({ status: false, message: error.message })
-        res.json({ status: false, message: error.message });
+        console.log({ status: false, message: error.message });
+        res.status(500).json({ status: false, message: error.message });
     }
 };
+
 
 exports.show = async (req, res) => {
     try {
@@ -50,15 +84,47 @@ exports.show = async (req, res) => {
 exports.update = async (req, res) => {
     const { id } = req.params;
     try {
+        
+        if (!req.body.size || !req.body.stockQuantity || !req.body.productId) {
+            return res.status(400).json({
+                status: false,
+                message: "All fields are required.",
+            });
+        }
+
+        
+        const stockQuantity = parseInt(req.body.stockQuantity);
+        if (isNaN(stockQuantity) || stockQuantity <= 0) {
+            return res.status(400).json({
+                status: false,
+                message: "stockQuantity must be a positive number.",
+            });
+        }
+
+        
+        const existingRecord = await ProductStockAndSize.findOne({
+            where: {
+                productId: req.body.productId.trim(),
+                size: req.body.size.trim()
+            }
+        });
+
+        if (existingRecord) {
+            return res.status(400).json({
+                status: false,
+                message: "A record with the same productId and size already exists.",
+            });
+        }
+
         const updatedProductStockAndSize = await ProductStockAndSize.findById(id);
 
         if (!updatedProductStockAndSize) {
             return res.json({ status: false, message: constant.MSG_FOR_PRODUCT_STOCK_SND_SIZE_NOT_FOUND });
         }
 
-        updatedProductStockAndSize.size = req.body.size;
-        updatedProductStockAndSize.stockQuantity = req.body.stockQuantity;
-        updatedProductStockAndSize.productId = req.body.productId;
+        updatedProductStockAndSize.size = req.body.size.trim();
+        updatedProductStockAndSize.stockQuantity = req.body.stockQuantity.trim();
+        updatedProductStockAndSize.productId = req.body.productId.trim();
         const savedProductStockAndSize = await updatedProductStockAndSize.save();
 
         res.status(200).json({
@@ -86,7 +152,7 @@ exports.delete = async (req, res) => {
 };
 
 
-//update the status using id
+
 exports.statusChnage = (req, res) => {
     const productStockAndSizeId = req.params.id;
     const { status } = req.body;

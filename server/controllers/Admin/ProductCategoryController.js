@@ -17,22 +17,33 @@ exports.index = async (req, res) => {
 
 exports.store = async (req, res) => {
   try {
-    const ProductCategoryData = {
-      productcategoryimg: req.file.filename,
-      name: req.body.name,
-      gender: req.body.gender,
-    };
-    const createdProductCategory = await ProductCategory.create(ProductCategoryData);
-    res.status(201).json({
-      status: true,
-      message: constant.MSG_FOR_PRODUCT_CATEGORY_ADD_SUCCEESFULL,
-      data: createdProductCategory,
-    });
+      const { name, gender } = req.body;
+
+      const existingProductCategory = await ProductCategory.findOne({ name, gender });
+
+      if (existingProductCategory) {
+          return res.status(400).json({ status: false, message: 'A product category with the same name and gender already exists' });
+      }
+
+      const ProductCategoryData = {
+          productcategoryimg: req.file.filename,
+          name,
+          gender,
+      };
+
+      const createdProductCategory = await ProductCategory.create(ProductCategoryData);
+
+      res.status(201).json({
+          status: true,
+          message: constant.MSG_FOR_PRODUCT_CATEGORY_ADD_SUCCEESFULL,
+          data: createdProductCategory,
+      });
   } catch (error) {
-    console.log({ status: false, message: error.message })
-    res.json({ status: false, message: error.message });
+      console.log({ status: false, message: error.message });
+      res.json({ status: false, message: error.message });
   }
 };
+
 
 exports.show = async (req, res) => {
   try {
@@ -50,31 +61,44 @@ exports.show = async (req, res) => {
 exports.update = async (req, res) => {
   const { id } = req.params;
   try {
-    const updatedProductCategory = await ProductCategory.findById(id);
+      const { name, gender } = req.body;
 
-    if (!updatedProductCategory) {
-      return res.json({ status: false, message: constant.MSG_FOR_PRODUCT_CATEGORY_NOT_FOUND });
-    }
+      if (!name || !gender) {
+          return res.status(400).json({ status: false, message: 'All fields are required' });
+      }
 
-    if (req.file) {
-      const imagePath = `public/images/product-categories/${updatedProductCategory.productcategoryimg}`;
-      deleteImage(imagePath);
-    }
+      const existingProductCategory = await ProductCategory.findOne({ name, gender, _id: { $ne: id } });
 
-    updatedProductCategory.productcategoryimg = req.file ? req.file.filename : updatedProductCategory.productcategoryimg;
-    updatedProductCategory.name = req.body.name;
-    updatedProductCategory.gender = req.body.gender;
-    const savedProductCategory = await updatedProductCategory.save();
+      if (existingProductCategory) {
+          return res.status(400).json({ status: false, message: 'A product category with the same name and gender already exists' });
+      }
 
-    res.status(200).json({
-      status: true,
-      message: constant.MSG_FOR_PRODUCT_CATEGORY_UPDATE_SUCCEESFULL,
-      data: updatedProductCategory,
-    });
+      const updatedProductCategory = await ProductCategory.findById(id);
+
+      if (!updatedProductCategory) {
+          return res.json({ status: false, message: constant.MSG_FOR_PRODUCT_CATEGORY_NOT_FOUND });
+      }
+
+      if (req.file) {
+          const imagePath = `public/images/product-categories/${updatedProductCategory.productcategoryimg}`;
+          deleteImage(imagePath);
+      }
+
+      updatedProductCategory.productcategoryimg = req.file ? req.file.filename : updatedProductCategory.productcategoryimg;
+      updatedProductCategory.name = name;
+      updatedProductCategory.gender = gender;
+      const savedProductCategory = await updatedProductCategory.save();
+
+      res.status(200).json({
+          status: true,
+          message: constant.MSG_FOR_PRODUCT_CATEGORY_UPDATE_SUCCEESFULL,
+          data: updatedProductCategory,
+      });
   } catch (error) {
-    res.json({ status: false, message: error.message });
+      res.json({ status: false, message: error.message });
   }
 };
+
 
 exports.delete = async (req, res) => {
   const { id } = req.params;
@@ -100,11 +124,11 @@ exports.statusChnage = (req, res) => {
 
   ProductCategory.findByIdAndUpdate(ProductCategoryId, { status })
     .then(updatedUser => {
-      res.json(updatedUser);
+      res.json({status: true, data: updatedUser});
     })
     .catch(err => {
       console.error(err);
-      res.status(500).json({ error: constant.MSG_FOR_FAILED_UPDATE_STATUS });
+      res.status(500).json({ status: false, error: constant.MSG_FOR_FAILED_UPDATE_STATUS });
     });
 };
 
@@ -122,19 +146,19 @@ exports.reorder = async (req, res) => {
       }
     }
 
-    res.status(200).json({ message: constant.MSG_FOR_TABLE_ORDER_UPDATE_SUCCESSFULL });
+    res.status(200).json({ status: true, message: constant.MSG_FOR_TABLE_ORDER_UPDATE_SUCCESSFULL });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: constant.MSG_FOR_INTERNAL_SERVER_ERROR });
+    res.status(500).json({ status: false, error: constant.MSG_FOR_INTERNAL_SERVER_ERROR });
   }
 };
 
 exports.counts = async (req, res) => {
   try {
     const count = await ProductCategory.countDocuments({});
-    res.json({ count });
+    res.json({ status: true, data: count });
   } catch (error) {
     console.error('Error counting productCategory:', error);
-    res.status(500).json({ error: 'Could not count productCategory' });
+    res.status(500).json({ status: false, error: 'Could not count productCategory' });
   }
 };

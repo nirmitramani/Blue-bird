@@ -23,14 +23,14 @@ exports.store = async (req, res) => {
         const existingFAQ = await FAQs.findOne({ question });
 
         if (existingFAQ) {
-            return res.status(400).json({ status: false, message: 'A FAQ with the same question already exists' });
+            return res.json({ status: false, message: 'A FAQ with the same question already exists' });
         }
 
         const FaqsData = {
-            question,
-            answer: req.body.answer,
+            question: question.trim(),
+            answer: req.body.answer.trim(),
         };
-        
+            
         const createdFAQs = await FAQs.create(FaqsData);
         
         res.status(201).json({
@@ -69,17 +69,17 @@ exports.update = async (req, res) => {
         const { question, answer } = req.body;
 
         if (!question || !answer) {
-            return res.status(400).json({ status: false, message: 'All fields are required' });
+            return res.json({ status: false, message: 'All fields are required' });
         }
 
         const existingFAQ = await FAQs.findOne({ question, _id: { $ne: id } });
 
         if (existingFAQ) {
-            return res.status(400).json({ status: false, message: 'A FAQ with the same question already exists' });
+            return res.json({ status: false, message: 'A FAQ with the same question already exists' });
         }
 
-        updatedFaqs.question = question;
-        updatedFaqs.answer = answer;
+        updatedFaqs.question = question.trim();
+        updatedFaqs.answer = answer.trim();
         const savedFaqs = await updatedFaqs.save();
 
         res.status(200).json({
@@ -118,7 +118,7 @@ exports.statusChnage = (req, res) => {
         })
         .catch(err => {
             console.error(err);
-            res.status(500).json({ error: constant.MSG_FOR_FAILED_UPDATE_STATUS });
+            res.json({ status: false, error: constant.MSG_FOR_FAILED_UPDATE_STATUS });
         });
 };
 
@@ -139,16 +139,16 @@ exports.reorder = async (req, res) => {
         res.status(200).json({ message: constant.MSG_FOR_TABLE_ORDER_UPDATE_SUCCESSFULL });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: constant.MSG_FOR_INTERNAL_SERVER_ERROR });
+        res.json({ status: false, error: constant.MSG_FOR_INTERNAL_SERVER_ERROR });
     }
 };
 
 exports.counts = async (req, res) => {
     try {
         const count = await FAQs.countDocuments({});
-        res.json({ count });
+        res.json({ status: true, count: count });
     } catch (error) {
         console.error('Error counting faqs:', error);
-        res.status(500).json({ error: 'Could not count faqs' });
+        res.json({ status: false, error: 'Could not count faqs' });
     }
 };

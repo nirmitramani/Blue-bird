@@ -48,7 +48,6 @@ exports.store = async (req, res) => {
             data: createdSale,
         });
     } catch (error) {
-        console.log({ status: false, message: error.message })
         res.json({ status: false, message: error.message });
     }
 };
@@ -139,7 +138,7 @@ exports.statusChnage = (req, res) => {
         })
         .catch(err => {
             console.error(err);
-            res.status(500).json({ error: constant.MSG_FOR_FAILED_UPDATE_STATUS });
+            res.json({ status: false, error: constant.MSG_FOR_FAILED_UPDATE_STATUS });
         });
 };
 
@@ -158,10 +157,10 @@ exports.reorder = async (req, res) => {
             }
         }
 
-        res.status(200).json({ message: constant.MSG_FOR_TABLE_ORDER_UPDATE_SUCCESSFULL });
+        res.status(200).json({ status: true, message: constant.MSG_FOR_TABLE_ORDER_UPDATE_SUCCESSFULL });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: constant.MSG_FOR_INTERNAL_SERVER_ERROR });
+        res.json({ status: false, error: constant.MSG_FOR_INTERNAL_SERVER_ERROR });
     }
 };
 

@@ -16,14 +16,18 @@ exports.index = async (req, res) => {
 
 exports.store = async (req, res) => {
     try {
-        if (!req.body.name || !req.body.email || !req.body.message) {
-            return res.status(400).json({ status: false, message: 'All fields are required' });
+        const { name, email, message } = req.body;
+
+        const lastPendingEntry = await ContactUs.findOne({ email, status: 'Pending' });
+
+        if (lastPendingEntry) {
+            return res.status(400).json({ status: false, message: 'There is already a pending request with this email' });
         }
 
         const ContactUsData = {
-            name: req.body.name,
-            email: req.body.email,
-            message: req.body.message,
+            name: name.trim(),
+            email: email.trim(),
+            messege: message.trim(),
         };
 
         const createdContactUs = await ContactUs.create(ContactUsData);
@@ -38,6 +42,7 @@ exports.store = async (req, res) => {
         res.json({ status: false, message: error.message });
     }
 };
+
 
 
 exports.show = async (req, res) => {

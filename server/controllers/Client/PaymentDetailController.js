@@ -16,26 +16,36 @@ exports.index = async (req, res) => {
 
 exports.store = async (req, res) => {
     try {
-        const {orderId, totalAmount, paymentType, onlinPaymentId, bankPaymentId, status} = req.body;
+        const { orderId, totalAmount, paymentType, onlinPaymentId, bankPaymentId } = req.body;
+
+        if (!orderId || !totalAmount || !paymentType || !onlinPaymentId || !bankPaymentId) {
+            return res.status(400).json({
+                status: false,
+                message: "All fields are required.",
+            });
+        }
+
         const PaymentDetailData = {
-            orderId: orderId,
-            totalAmount: totalAmount,
-            paymentType: paymentType,
-            onlinPaymentId: onlinPaymentId,
-            bankPaymentId: bankPaymentId,
-            status: status,
+            orderId: orderId.trim(),
+            totalAmount: totalAmount.trim(),
+            paymentType: paymentType.trim(),
+            onlinPaymentId: onlinPaymentId.trim(),
+            bankPaymentId: bankPaymentId.trim(),
         };
+
         const createdPaymentDetail = await PaymentDetail.create(PaymentDetailData);
+
         res.status(201).json({
             status: true,
             message: constant.MSG_FOR_PAYMENT_DETAIL_ADD_SUCCEESFULL,
             data: createdPaymentDetail,
         });
     } catch (error) {
-        console.log({ status: false, message: error.message })
-        res.json({ status: false, message: error.message });
+        console.log({ status: false, message: error.message });
+        res.status(500).json({ status: false, message: error.message });
     }
 };
+
 
 exports.show = async (req, res) => {
     try {
@@ -54,18 +64,25 @@ exports.update = async (req, res) => {
     const { id } = req.params;
     const {orderId, totalAmount, paymentType, onlinPaymentId, bankPaymentId, status} = req.body;
 
+    if (!orderId || !totalAmount || !paymentType || !onlinPaymentId || !bankPaymentId || !status) {
+        return res.status(400).json({
+            status: false,
+            message: "All fields are required.",
+        });
+    }
+
     try {
         const updatedPaymentDetail = await PaymentDetail.findById(id);
 
         if (!updatedPaymentDetail) {
             return res.json({ status: false, message: constant.MSG_FOR_PAYMENT_DETAIL_NOT_FOUND });
         }
-        updatedPaymentDetail.orderId = orderId;
-        updatedPaymentDetail.totalAmount = totalAmount;
-        updatedPaymentDetail.paymentType = paymentType;
-        updatedPaymentDetail.onlinPaymentId = onlinPaymentId;
-        updatedPaymentDetail.bankPaymentId = bankPaymentId;
-        updatedPaymentDetail.status = status;
+        updatedPaymentDetail.orderId = orderId.trim();
+        updatedPaymentDetail.totalAmount = totalAmount.trim();
+        updatedPaymentDetail.paymentType = paymentType.trim();
+        updatedPaymentDetail.onlinPaymentId = onlinPaymentId.trim();
+        updatedPaymentDetail.bankPaymentId = bankPaymentId.trim();
+        updatedPaymentDetail.status = status.trim();
         const savedPaymentDetail = await updatedPaymentDetail.save();
 
         res.status(200).json({
