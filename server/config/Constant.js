@@ -56,6 +56,11 @@ module.exports = Object.freeze({
     MSG_FOR_FAQS_DELETE_SUCCEESFULL: "FAQ Delete Successfully",
     MSG_FOR_FAQS_NOT_FOUND: "FAQs not found",
 
+    // CMS Pages MESSEGE CONSTANT
+    MSG_FOR_GET_CMS_PAGES_DATA_SUCCESSFULLY: "Get Cms pages Data Successfull",
+    MSG_FOR_CMS_PAGES_UPDATE_SUCCEESFULL: "Cms page Update Successfully",
+    MSG_FOR_CMS_PAGES_NOT_FOUND: "FAQs not found",
+
     // ORDER MESSEGE CONSTANT
     MSG_FOR_GET_ORDER_DATA_SUCCESSFULLY: "Get Orders Data Successfull",
     MSG_FOR_ORDER_ADD_SUCCEESFULL: "Order add Successfully",
@@ -71,7 +76,7 @@ module.exports = Object.freeze({
 
     // CONTACTUS MESSEGE CONSTANT
     MSG_FOR_GET_CONTACTUS_DATA_SUCCESSFULLY: "Get contact-us Data Successfull",
-    MSG_FOR_CONTACTUS_ADD_SUCCEESFULL: "contact send Successfully",
+    MSG_FOR_CONTACTUS_ADD_SUCCEESFULL: "Message sent Successfully",
     MSG_FOR_CONTACTUS_NOT_FOUND: "Contact-us not found",
 
     // IMAGE CONSTANT

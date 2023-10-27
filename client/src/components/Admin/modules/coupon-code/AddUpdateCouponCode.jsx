@@ -172,21 +172,6 @@ const AddUpdateCouponCode = () => {
     }
 
     try {
-      if (!String(formData.title).trim() || !String(formData.code).trim() || !String(formData.description).trim() || !String(formData.discount).trim() || !String(formData.maxDiscount).trim() || !String(formData.startDate).trim() || !String(formData.endDate).trim() || !String(formData.minimumOrderValue).trim()) {
-        toast.warning('Please fill in all required fields.', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'dark',
-        });
-        stopLoading();
-        return;
-      }
-
       if (id) {
         if (!dataFetched) {
           navigate('/admin/coupon-code');

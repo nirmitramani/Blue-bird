@@ -27,26 +27,73 @@ const ContactUs = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      if (!formData.name || !formData.email || !formData.message) {
-        toast.warning('Please fill in all required fields.', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'dark',
-        });
-        return;
-      }
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      toast.warning('Please fill in all required fields.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      return;
+    }
 
-      const formDataToSend = {
-        name: formData.name,
-        email: formData.email,
-        message: formData.message,
-      };
+    if (!/[a-zA-Z]/.test(formData.name)) {
+      toast.warning('Please enter a valid name.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+      toast.warning('Please enter a valid email address.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+    
+
+    if (!/[a-zA-Z]/.test(formData.message)) {
+      toast.warning('Please enter a valid Message.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      stopLoading();
+      return;
+    }
+
+    const formDataToSend = {
+      name: formData.name,
+      email: formData.email,
+      message: formData.message,
+    };
+
+    try {
 
       // Create new Contact
       const response = await axios.post(`http://localhost:3000/contact-us`, formDataToSend);
