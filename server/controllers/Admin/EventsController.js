@@ -36,9 +36,9 @@ exports.store = async (req, res) => {
         }
 
         const eventData = {
-            eventimg: req.file.filename,
-            name: name,
-            description: description,
+            eventimg: req.file.filename.trim(),
+            name: name.trim(),
+            description: description.trim(),
         };
 
         const createdEvent = await Event.create(eventData);
@@ -48,7 +48,6 @@ exports.store = async (req, res) => {
             data: createdEvent,
         });
     } catch (error) {
-        console.log({ status: false, message: error.message })
         res.json({ status: false, message: error.message });
     }
 };
@@ -94,9 +93,9 @@ exports.update = async (req, res) => {
             deleteImage(imagePath);
         }
 
-        updatedEvent.eventimg = req.file ? req.file.filename : updatedEvent.eventimg;
-        updatedEvent.name = name;
-        updatedEvent.description = description;
+        updatedEvent.eventimg = req.file ? req.file.filename.trim() : updatedEvent.eventimg.trim();
+        updatedEvent.name = name.trim();
+        updatedEvent.description = description.trim();
         const savedEvent = await updatedEvent.save();
 
         res.status(200).json({
@@ -139,7 +138,7 @@ exports.statusChnage = (req, res) => {
         })
         .catch(err => {
             console.error(err);
-            res.status(500).json({ error: constant.MSG_FOR_FAILED_UPDATE_STATUS });
+            res.json({ status: false, error: constant.MSG_FOR_FAILED_UPDATE_STATUS });
         });
 };
 
@@ -158,19 +157,19 @@ exports.reorder = async (req, res) => {
             }
         }
 
-        res.status(200).json({ message: constant.MSG_FOR_TABLE_ORDER_UPDATE_SUCCESSFULL });
+        res.status(200).json({ status: true, message: constant.MSG_FOR_TABLE_ORDER_UPDATE_SUCCESSFULL });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: constant.MSG_FOR_INTERNAL_SERVER_ERROR });
+        res.json({ status: false, error: constant.MSG_FOR_INTERNAL_SERVER_ERROR });
     }
 };
 
 exports.counts = async (req, res) => {
     try {
         const count = await Event.countDocuments({});
-        res.json({ count });
+        res.json({ status: true, count: count });
     } catch (error) {
         console.error('Error counting event:', error);
-        res.status(500).json({ error: 'Could not count event' });
+        res.json({ status: false, error: 'Could not count event' });
     }
 };

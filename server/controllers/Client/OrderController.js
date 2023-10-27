@@ -18,33 +18,57 @@ exports.index = async (req, res) => {
 
 exports.store = async (req, res) => {
     try {
-        const { userId, couponId, discountAmount, orderDate, paymentType, orderStatus, products, totalAmount, codpPaymentType, onlinPaymentId, bankPaymentId, paymentStatus } = req.body;
+        const { userId, couponId, discountAmount, orderDate, paymentType, orderStatus, products, totalAmount, codPaymentType, onlinPaymentId, bankPaymentId, paymentStatus } = req.body;
+
+        if (!userId || !couponId || !discountAmount || !orderDate || !paymentType || !orderStatus || !products || !totalAmount || !codPaymentType || !onlinPaymentId || !bankPaymentId || !paymentStatus) {
+            return res.status(400).json({
+                status: false,
+                message: "All fields are required.",
+            });
+        }
+
+        if (!products || products.length === 0) {
+            return res.status(400).json({
+                status: false,
+                message: "At least one product must be included in the order.",
+            });
+        }
+
+        for (const product of products) {
+            if (!product.productId || !product.quantity || product.quantity <= 0) {
+                return res.status(400).json({
+                    status: false,
+                    message: "Each product must have a valid productId and a quantity greater than 0.",
+                });
+            }
+        }
+
         const OrderData = {
-            userId: userId,
-            couponId: couponId,
-            discountAmount: discountAmount,
-            orderDate: orderDate,
-            paymentType: paymentType,
-            status: orderStatus,
+            userId: userId.trim(),
+            couponId: couponId.trim(),
+            discountAmount: discountAmount.trim(),
+            orderDate: orderDate.trim(),
+            paymentType: paymentType.trim(),
+            status: orderStatus.trim(),
         };
         const createdOrder = await Order.create(OrderData);
 
         const orderItems = products.map(product => {
             return {
-                orderId: createdOrder._id,
-                productId: product.productId,
-                quantity: product.quantity,
-                amount: product.amount,
+                orderId: createdOrder._id.trim(),
+                productId: product.productId.trim(),
+                quantity: product.quantity.trim(),
+                amount: product.amount.trim(),
             };
         });
         const orderItem = await OrderItem.insertMany(orderItems);
 
         const PaymentData = {
-            totalAmount: totalAmount,
-            codpPaymentType: codpPaymentType,
-            onlinPaymentId: onlinPaymentId,
-            bankPaymentId: bankPaymentId,
-            paymentStatus: paymentStatus,
+            totalAmount: totalAmount.trim(),
+            paymentType: codPaymentType.trim(),
+            onlinPaymentId: onlinPaymentId.trim(),
+            bankPaymentId: bankPaymentId.trim(),
+            paymentStatus: paymentStatus.trim(),
         };
         const orderPayment = await Order.create(PaymentData);
 
@@ -61,6 +85,7 @@ exports.store = async (req, res) => {
         res.json({ status: false, message: error.message });
     }
 };
+
 
 exports.show = async (req, res) => {
     try {
@@ -100,12 +125,11 @@ exports.delete = async (req, res) => {
     }
 };
 
-//update the status using id
 exports.statusChnage = (req, res) => {
-    const faqId = req.params.id;
+    const orderId = req.params.id;
     const { status } = req.body;
 
-    Order.findByIdAndUpdate(faqId, { status })
+    Order.findByIdAndUpdate(orderId, { status })
         .then(updatedOrder => {
             res.json({ status: true, updatedOrder: updatedOrder });
         })
@@ -118,9 +142,8 @@ exports.statusChnage = (req, res) => {
 exports.counts = async (req, res) => {
     try {
         const count = await Order.countDocuments({});
-        res.json({ count });
+        res.json({ status: true, data: count });
     } catch (error) {
-        console.error('Error counting event:', error);
-        res.status(500).json({ error: 'Could not count event' });
+        res.status(500).json({ status: false, error: 'Could not count event' });
     }
 };

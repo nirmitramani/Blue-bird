@@ -17,11 +17,27 @@ exports.index = async (req, res) => {
 exports.store = async (req, res) => {
     try {
         const { productId, rating, description } = req.body;
+
+        if (!productId || !rating || !description) {
+            return res.status(400).json({
+                status: false,
+                message: "All fields are required.",
+            });
+        }
+
+        if (isNaN(rating) || rating <= 0) {
+            return res.status(400).json({
+                status: false,
+                message: "Rating must be a positive number.",
+            });
+        }
+
         const ReviewData = {
-            productId: productId,
-            rating: rating,
-            description: description,
+            productId: productId.trim(),
+            rating: rating.trim(),
+            description: description.trim(),
         };
+
         const createdReview = await Review.create(ReviewData);
 
         res.status(201).json({
@@ -30,9 +46,10 @@ exports.store = async (req, res) => {
             data: createdReview,
         });
     } catch (error) {
-        res.json({ status: false, message: error.message });
+        res.status(500).json({ status: false, message: error.message });
     }
 };
+
 
 exports.show = async (req, res) => {
     try {
@@ -82,9 +99,9 @@ exports.statusChnage = (req, res) => {
 exports.counts = async (req, res) => {
     try {
         const count = await Review.countDocuments({});
-        res.json({ count });
+        res.json({ status: true, data: count });
     } catch (error) {
         console.error('Error counting event:', error);
-        res.status(500).json({ error: 'Could not count event' });
+        res.status(500).json({ status: false, error: 'Could not count event' });
     }
 };

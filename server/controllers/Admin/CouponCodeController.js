@@ -18,30 +18,38 @@ exports.index = async (req, res) => {
 exports.store = async (req, res) => {
     try {
         const { title, code, description, discount, maxDiscount, minimumOrderValue, startDate, endDate } = req.body;
-
+        
         if (!title || !code || !description || !discount || !maxDiscount || !minimumOrderValue || !startDate || !endDate) {
-            return res.status(400).json({ status: false, message: 'All fields are required' });
+            return res.json({ status: false, message: 'All fields are required' });
+        }
+
+        if (discount <= 0 || maxDiscount <= 0 || minimumOrderValue <= 0) {
+            return res.json({ status: false, message: 'Enter Only positive values' });
+        }
+
+        if (new Date(startDate) >= new Date(endDate)) {
+            return res.json({ status: false, message: 'Start date must be earlier than end date' });
         }
 
         const existingTitleCoupon = await CouponCode.findOne({ title });
         if (existingTitleCoupon) {
-            return res.status(400).json({ status: false, message: 'A coupon code with the same title already exists' });
+            return res.json({ status: false, message: 'A coupon code with the same title already exists' });
         }
 
         const existingCodeCoupon = await CouponCode.findOne({ code });
         if (existingCodeCoupon) {
-            return res.status(400).json({ status: false, message: 'A coupon code with the same code already exists' });
+            return res.json({ status: false, message: 'A coupon code with the same code already exists' });
         }
 
         const CouponCodeData = {
-            title: title,
-            code: code,
-            description: description,
-            discount: discount,
-            maxDiscount: maxDiscount,
-            minimumOrderValue: minimumOrderValue,
-            startDate: startDate,
-            endDate: endDate,
+            title: title.trim(),
+            code: code.trim(),
+            description: description.trim(),
+            discount: discount.trim(),
+            maxDiscount: maxDiscount.trim(),
+            minimumOrderValue: minimumOrderValue.trim(),
+            startDate: startDate.trim(),
+            endDate: endDate.trim(),
         };
         const createdCouponCode = await CouponCode.create(CouponCodeData);
         res.status(201).json({
@@ -74,9 +82,17 @@ exports.update = async (req, res) => {
         const { title, code, description, discount, maxDiscount, minimumOrderValue, startDate, endDate } = req.body;
 
         if (!title || !code || !description || !discount || !maxDiscount || !minimumOrderValue || !startDate || !endDate) {
-            return res.status(400).json({ status: false, message: 'All fields are required' });
+            return res.json({ status: false, message: 'All fields are required' });
         }
-        
+
+        if (discount <= 0 || maxDiscount <= 0 || minimumOrderValue <= 0) {
+            return res.json({ status: false, message: 'Enter Only positive values' });
+        }
+
+        if (new Date(startDate) >= new Date(endDate)) {
+            return res.json({ status: false, message: 'Start date must be earlier than end date' });
+        }
+
         const updatedCouponCode = await CouponCode.findById(id);
 
         if (!updatedCouponCode) {
@@ -85,22 +101,22 @@ exports.update = async (req, res) => {
 
         const existingTitleCoupon = await CouponCode.findOne({ title, _id: { $ne: id } });
         if (existingTitleCoupon) {
-            return res.status(400).json({ status: false, message: 'A coupon code with the same title already exists' });
+            return res.json({ status: false, message: 'A coupon code with the same title already exists' });
         }
 
         const existingCodeCoupon = await CouponCode.findOne({ code, _id: { $ne: id } });
         if (existingCodeCoupon) {
-            return res.status(400).json({ status: false, message: 'A coupon code with the same code already exists' });
+            return res.json({ status: false, message: 'A coupon code with the same code already exists' });
         }
 
-        updatedCouponCode.title = title;
-        updatedCouponCode.code = code;
-        updatedCouponCode.description = description;
-        updatedCouponCode.discount = discount;
-        updatedCouponCode.maxDiscount = maxDiscount;
-        updatedCouponCode.minimumOrderValue = minimumOrderValue;
-        updatedCouponCode.startDate = startDate;
-        updatedCouponCode.endDate = endDate;
+        updatedCouponCode.title = title.trim();
+        updatedCouponCode.code = code.trim();
+        updatedCouponCode.description = description.trim();
+        updatedCouponCode.discount = discount.trim();
+        updatedCouponCode.maxDiscount = maxDiscount.trim();
+        updatedCouponCode.minimumOrderValue = minimumOrderValue.trim();
+        updatedCouponCode.startDate = startDate.trim();
+        updatedCouponCode.endDate = endDate.trim();
         const savedCouponCode = await updatedCouponCode.save();
 
         res.status(200).json({
@@ -112,6 +128,7 @@ exports.update = async (req, res) => {
         res.json({ status: false, message: error.message });
     }
 };
+
 
 
 exports.delete = async (req, res) => {

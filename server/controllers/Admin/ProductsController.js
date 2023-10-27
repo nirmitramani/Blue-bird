@@ -17,22 +17,44 @@ exports.index = async (req, res) => {
 
 exports.store = async (req, res) => {
   try {
-    const productimgFilename = req.files.find(file => file.fieldname === 'productimg').filename;
-    const productthumbimg = [];
-
-    for (const file of req.files) {
-      if (file.fieldname.startsWith('productthumbimg_')) {
-        productthumbimg.push(file.filename);
-      }
+  
+    const { name, description, categoryid, price } = req.body;
+    if (!name || !description || !categoryid || !price) {
+      return res.json({ status: false, message: 'All fields are required' });
     }
+
+  
+    if (isNaN(price) || parseFloat(price) <= 0) {
+      return res.json({ status: false, message: 'Price must be a positive number' });
+    }
+
+    const isNameUnique = await Product.findOne({ name, categoryid, _id: { $ne: id } });
+    if (isNameUnique) {
+      return res.json({ status: false, message: 'Product with the same name and category already exists' });
+    }
+
+  
+    const productImages = req.files.filter(file => file.fieldname.startsWith('productthumbimg_'));
+    if (productImages.length === 0) {
+      return res.json({ status: false, message: 'Thumb image is required' });
+    }
+  
+    if(!req.files.find(file => file.fieldname === 'productimg')){
+      return res.json({ status: false, message: 'Product image is required' });
+    }
+    
+    const productthumbimg = productImages.map(file => file.filename);
+    const productimgFilename = req.files.find(file => file.fieldname === 'productimg').filename;
+
     const productData = {
       productimg: productimgFilename,
       productthumbimg: productthumbimg,
-      name: req.body.name,
-      description: req.body.description,
-      categoryid: req.body.categoryid,
-      price: req.body.price,
+      name: name,
+      description: description,
+      categoryid: categoryid,
+      price: price,
     };
+
     const createdProduct = await Product.create(productData);
     res.status(201).json({
       status: true,
@@ -66,6 +88,28 @@ exports.update = async (req, res) => {
       return res.status(404).json({ status: false, message: 'Product not found' });
     }
 
+  
+    const { name, description, categoryid, price } = req.body;
+    if (!name || !description || !categoryid || !price) {
+      return res.json({ status: false, message: 'All fields are required' });
+    }
+
+  
+    if (isNaN(price) || parseFloat(price) <= 0) {
+      return res.json({ status: false, message: 'Price must be a positive number' });
+    }
+
+  
+    if (!req.files || req.files.length === 0) {
+      return res.json({ status: false, message: 'At least one image is required' });
+    }
+
+  
+    const isNameUnique = await Product.findOne({ name, categoryid, _id: { $ne: id } });
+    if (isNameUnique) {
+      return res.json({ status: false, message: 'Product with the same name and category already exists' });
+    }
+
     if (req.files) {
       const thumbimage = [];
       for (const file of req.files) {
@@ -78,7 +122,7 @@ exports.update = async (req, res) => {
             const oldThumbImgPath = `public/images/products/${oldThumbImg}`;
             deleteImage(oldThumbImgPath);
           }
-          thumbimage.push(file.filename);
+          thumbimage.push(file.filename.trim());
         }
       }
       if (req.files.find(file => file.fieldname.startsWith('productthumbimg_'))) {
@@ -86,10 +130,10 @@ exports.update = async (req, res) => {
       }
     }
 
-    existingProduct.name = req.body.name;
-    existingProduct.description = req.body.description;
-    existingProduct.price = req.body.price;
-    existingProduct.categoryid = req.body.categoryid;
+    existingProduct.name = name.trim();
+    existingProduct.description = description.trim();
+    existingProduct.price = price.trim();
+    existingProduct.categoryid = categoryid.trim();
 
     const updatedProduct = await existingProduct.save();
 
@@ -117,7 +161,6 @@ exports.delete = async (req, res) => {
   }
 };
 
-//update the status using id
 exports.statusChnage = (req, res) => {
   const productId = req.params.id;
   const { status } = req.body;
@@ -128,7 +171,7 @@ exports.statusChnage = (req, res) => {
     })
     .catch(err => {
       console.error(err);
-      res.status(500).json({ error: constant.MSG_FOR_FAILED_UPDATE_STATUS });
+      res.status(500).json({ status: false, error: constant.MSG_FOR_FAILED_UPDATE_STATUS });
     });
 };
 
@@ -146,19 +189,19 @@ exports.reorder = async (req, res) => {
       }
     }
 
-    res.status(200).json({ message: constant.MSG_FOR_TABLE_ORDER_UPDATE_SUCCESSFULL });
+    res.status(200).json({ status: true, message: constant.MSG_FOR_TABLE_ORDER_UPDATE_SUCCESSFULL });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: constant.MSG_FOR_INTERNAL_SERVER_ERROR });
+    res.status(500).json({ status: false, error: constant.MSG_FOR_INTERNAL_SERVER_ERROR });
   }
 };
 
 exports.counts = async (req, res) => {
   try {
     const count = await Product.countDocuments({});
-    res.json({ count });
+    res.json({ status: true, count: count });
   } catch (error) {
     console.error('Error counting products:', error);
-    res.status(500).json({ error: 'Could not count products' });
+    res.status(500).json({ status: false, error: 'Could not count products' });
   }
 };
