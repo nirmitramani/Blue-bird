@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../schema/Client/UserSchema');
 const secretKey = process.env.SECRET_TOKEN_KEY;
+const constant=require('../config/Constant')
 
 const createToken = (id, maxAge) => {
     return jwt.sign({ id }, process.env.SECRET_TOKEN_KEY, {
@@ -45,34 +46,68 @@ const signUp = async (req, res) => {
 };
 
 
+// const signIn = async (req, res) => {
+//     const { role } = req.params;
+//     const { userName, email, password } = req.body;
+//     const user = await User.findOne({ $or: [{ userName }, { email }] });
+
+//     if (!user) {
+//         return res.json({ status: false, message: constant.MSG_FOR_USER_NOT_FOUND });
+//     }
+
+//     const passwordMatch = await bcrypt.compare(password, user.password);
+
+//     if (!passwordMatch) {
+//         return res.json({ status: false, message: constant.MSG_FOR_WRONG_PASSWORD });
+//     }
+
+//     if (role == user.role) {
+//         const maxAge = 50 * 365 * 24 * 60 * 60;
+//         const token = createToken(user._id, maxAge);
+
+//         res.cookie(user.role, token, {
+//             withCredentials: true,
+//             httpOnly: false,
+//             maxAge: maxAge * 1000,
+//         });
+//         res.status(200).json({ status: true, user: user, created: true });
+//     } else {
+//         return res.json({ status: false, message: constant.MSG_FOR_INVALID_CREDENTIALS });
+//     }
+// };
 const signIn = async (req, res) => {
     const { role } = req.params;
-    const { userName, password } = req.body;
-    const user = await User.findOne({ userName });
-
+    const { userNameOrEmail, password } = req.body;
+  
+    let user = await User.findOne({ $or: [{ userName: userNameOrEmail }, { email: userNameOrEmail }] });
+  
     if (!user) {
-      return res.json({ status:false, message: "constant.MSG_FOR_USER_NOT_FOUND" });
+      return res.json({ status: false, message: constant.MSG_FOR_USER_NOT_FOUND });
     }
-      const passwordMatch = await bcrypt.compare(password, user.password);
-
+  
+    const passwordMatch = await bcrypt.compare(password, user.password);
+  
     if (!passwordMatch) {
-      return res.json({ status:false, message: "constant.MSG_FOR_WRONG_PASSWORD" });
+      return res.json({ status: false, message: constant.MSG_FOR_WRONG_PASSWORD });
     }
-
-    if(role == user.role){
-        const maxAge = 50 * 365 * 24 * 60 * 60;
-        const token = createToken(user._id, maxAge)
-        res.cookie(user.role, token, {
-            withCrdentials: true,
-            httpOnly: false,
-            maxAge: maxAge * 1000,
-        });
-        res.status(200).json({ status: true, user: user, created: true });
+  
+    if (role == user.role) {
+      const maxAge = 50 * 365 * 24 * 60 * 60;
+      const token = createToken(user._id, maxAge);
+  
+      res.cookie(user.role, token, {
+        withCredentials: true,
+        httpOnly: false,
+        maxAge: maxAge * 1000,
+      });
+  
+      return res.status(200).json({ status: true, user, created: true });
+    } else {
+      return res.json({ status: false, message: constant.MSG_FOR_INVALID_CREDENTIALS });
     }
-    else{
-        return res.json({ status:false, message: "constant.MSG_FOR_INVALID_CREDENTIALS" });
-    }
-};
+  };
+  
+  
 
 module.exports = {
     signUp,

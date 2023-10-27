@@ -8,7 +8,7 @@ import axios from 'axios';
 const SignIn = () => {
 
   const [formData, setFormData] = useState({
-    userName: '',
+    userNameOrEmail: '',
     password: '',
   });
 
@@ -30,7 +30,8 @@ const SignIn = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.userName.trim() || !formData.password.trim()) {
+
+    if (!formData.userNameOrEmail.trim() || !formData.password.trim()) {
       toast.warning('Please fill all fields.', {
         position: 'top-right',
         autoClose: 5000,
@@ -108,9 +109,9 @@ const SignIn = () => {
             <input
               type="text"
               className="w-[317px] h-[32px] left-[26px] top-[15px] absolute bg-transparent text-[15px] outline-none"
-              placeholder="Enter User Name"
-              name='userName'
-              value={formData.userName}
+              placeholder="Enter User Name Or Email"
+              name='userNameOrEmail'
+              value={formData.userNameOrEmail}
               onChange={handleChange}
             />
           </div>

@@ -165,7 +165,7 @@ const SignUp = () => {
           </div>
           <div className="w-[321px] h-[54px] left-[4px] top-[186px] absolute">
             <div className="absolute text-black text-lg font-semibold">If you already have an account </div>
-            <div className="w-[308px] top-[30px] absolute text-black text-lg">You can <span className="text-lg text-navy-blue font-semibold">Login here !</span></div>
+            <div className="w-[308px] top-[30px] absolute text-black text-lg">You can <Link to={'/sign-in'}><span className="text-lg text-navy-blue font-semibold">Login here !</span></Link></div>
           </div>
           <div className="w-[313px] h-[556px] left-[316px] top-[108px] absolute flex-col justify-center items-center inline-flex">
             <img src={signup} alt="Signup" />
