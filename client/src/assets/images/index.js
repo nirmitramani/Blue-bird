@@ -27,6 +27,7 @@ import product1 from './product-detail-01.jpg'
 import product2 from './product-detail-02.jpg'
 import product3 from './product-detail-03.jpg'
 
+
 export {
     bigShoe1,
     bigShoe2,
